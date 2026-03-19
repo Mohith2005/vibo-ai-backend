@@ -1,11 +1,23 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, SafeAreaView, ScrollView } from 'react-native';
+```javascript
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, SafeAreaView, ScrollView, TextInput } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { usePlayer } from '../../context/PlayerContext';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { setApiUrls, getApiUrl, getPyUrl } from '../../services/api';
 
 export default function SettingsScreen() {
     const { clearHistory } = usePlayer();
+
+    const [nodeUrl, setNodeUrl] = useState(getApiUrl());
+    const [pyUrl, setPyUrl] = useState(getPyUrl());
+
+    useEffect(() => {
+        // Refresh the placeholder values
+        setNodeUrl(getApiUrl());
+        setPyUrl(getPyUrl());
+    }, []);
 
     const handleClearHistory = () => {
         Alert.alert(
@@ -21,6 +33,11 @@ export default function SettingsScreen() {
         );
     };
 
+    const handleSaveNetwork = async () => {
+        await setApiUrls(nodeUrl, pyUrl);
+        Alert.alert('Network Saved!', 'The app will now route all traffic to these URLs.');
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -33,9 +50,38 @@ export default function SettingsScreen() {
                 </View>
 
                 <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Developer Network Override</Text>
+                    <Text style={styles.description}>
+                        If your mobile internet blocks Localtunnel, enter your computer's local IP address here (e.g. http://192.168.1.5:5001).
+                    </Text>
+                    
+                    <Text style={styles.label}>Node Music Server URL</Text>
+                    <TextInput 
+                        style={styles.input} 
+                        value={nodeUrl} 
+                        onChangeText={setNodeUrl} 
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                    />
+
+                    <Text style={styles.label}>Python AI Server URL</Text>
+                    <TextInput 
+                        style={styles.input} 
+                        value={pyUrl} 
+                        onChangeText={setPyUrl} 
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                    />
+
+                    <TouchableOpacity style={styles.button} onPress={handleSaveNetwork}>
+                        <Text style={styles.buttonText}>Save Network Link</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.section}>
                     <View style={styles.sectionHeader}>
                         <Ionicons name="trash-outline" size={24} color="#EF4444" />
-                        <Text style={styles.sectionTitle}>Data & Privacy</Text>
+                        <Text style={styles.sectionTitle}>Data Management</Text>
                     </View>
                     
                     <Text style={styles.hint}>
@@ -95,4 +141,26 @@ const styles = StyleSheet.create({
     footer: { marginTop: 60, alignItems: 'center' },
     versionHeader: { fontSize: 18, fontWeight: '900', color: '#D1D5DB', letterSpacing: 2 },
     versionSub: { fontSize: 12, color: '#D1D5DB', marginTop: 4, fontWeight: 'bold' }
+  description: {
+    color: '#a0a0a0',
+    fontSize: 14,
+    marginBottom: 15,
+    lineHeight: 20,
+  },
+  label: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 5,
+  },
+  input: {
+    backgroundColor: '#2a2a2a',
+    color: '#ffffff',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 15,
+    fontSize: 14,
+    borderWidth: 1,
+    borderColor: '#333',
+  },
 });
