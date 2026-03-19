@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-let dynamicNodeUrl = "https://vibo-node-api-mh2026.loca.lt";
-let dynamicPyUrl = "https://vibo-py-api-mh2026.loca.lt";
+let dynamicNodeUrl = "https://valvar-jacquelin-gradualistic.ngrok-free.dev";
+let dynamicPyUrl = "https://valvar-jacquelin-gradualistic.ngrok-free.dev";
 
 export const getApiUrl = () => dynamicNodeUrl;
 export const getPyUrl = () => dynamicPyUrl;
