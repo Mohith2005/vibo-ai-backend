@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator, SafeAreaView, Dimensions, Animated, Easing, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator, SafeAreaView, Dimensions, Animated, Easing, ScrollView, TextInput } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -225,6 +225,20 @@ export default function HomeScreen() {
             <Text style={styles.voiceLabel}>{isListening ? "Listening..." : '"Hey Vibo"'}</Text>
           </TouchableOpacity>
 
+          <View style={styles.textInputBox}>
+            <TextInput 
+              placeholder="Or manually type your vibe here..." 
+              placeholderTextColor="#9CA3AF" 
+              style={styles.textInputStyle} 
+              onSubmitEditing={(e) => {
+                if (e.nativeEvent.text.trim()) {
+                  analyzeEmotion(null, e.nativeEvent.text);
+                }
+              }} 
+            />
+            <Ionicons name="send" size={20} color="#4F46E5" />
+          </View>
+
           {loading && (
             <View style={styles.loadingOverlay}>
               <ActivityIndicator size="large" color="#4F46E5" />
@@ -261,6 +275,8 @@ const styles = StyleSheet.create({
   voiceTrigger: { backgroundColor: '#111827', paddingHorizontal: 32, paddingVertical: 20, borderRadius: 40, flexDirection: 'row', alignItems: 'center', marginTop: 40, elevation: 15 },
   listeningMode: { backgroundColor: '#7C3AED' },
   voiceLabel: { color: '#FFF', marginLeft: 16, fontSize: 20, fontWeight: '900' },
+  textInputBox: { marginTop: 16, marginHorizontal: 32, flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF', borderRadius: 20, paddingHorizontal: 16, elevation: 2, width: width - 64 },
+  textInputStyle: { flex: 1, height: 50, color: '#111827', fontSize: 16, fontWeight: '500' },
   loadingOverlay: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(255,255,255,0.7)', justifyContent: 'center', alignItems: 'center', borderRadius: 32 },
   loadingText: { marginTop: 12, color: '#4F46E5', fontWeight: 'bold' },
   errorText: { color: '#EF4444', marginTop: 24, textAlign: 'center', fontWeight: '600' },

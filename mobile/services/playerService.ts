@@ -11,7 +11,10 @@ export class PlayerService {
       await this.sound.unloadAsync();
     }
     const { sound } = await Audio.Sound.createAsync(
-      { uri: url },
+      { 
+        uri: url,
+        headers: { 'ngrok-skip-browser-warning': 'true' }
+      },
       { shouldPlay: true },
       onStatusUpdate
     );
@@ -37,3 +40,5 @@ export class PlayerService {
     }
   }
 }
+
+export const playerService = new PlayerService();

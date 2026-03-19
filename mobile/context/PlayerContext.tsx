@@ -184,10 +184,11 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             const backendUrl = getApiUrl();
             const secureAudioStream = song.audioUrl.startsWith('http') ? song.audioUrl : `${backendUrl}${song.audioUrl}`;
 
+            // Save history BEFORE requesting the heavy audio stream so analytics are perfectly tracked
+            addToHistory(emo, conf, song._id);
+
             await playerService.loadAndPlay(secureAudioStream, statusCallback);
             await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-
-            addToHistory(emo, conf, song._id);
             setCurrentSong(song);
             setEmotion(emo);
 
