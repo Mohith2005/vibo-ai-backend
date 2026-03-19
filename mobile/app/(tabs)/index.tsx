@@ -31,6 +31,17 @@ export default function HomeScreen() {
   const [detectedEmotion, setDetectedEmotion] = useState('');
   const [confidence, setConfidence] = useState(0);
 
+  const pulseAnim = React.useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, { toValue: 1.03, duration: 3000, useNativeDriver: true, easing: Easing.inOut(Easing.ease) }),
+        Animated.timing(pulseAnim, { toValue: 1, duration: 3000, useNativeDriver: true, easing: Easing.inOut(Easing.ease) })
+      ])
+    ).start();
+  }, []);
+
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -66,7 +77,7 @@ export default function HomeScreen() {
       },
       (error) => {
         setIsListening(false);
-        alert("Microphone error. Did you grant Google Audio permissions?");
+        alert("Native Voice Blocked! Tip: Tap the Text-box below and use the powerful 🎤 Microphone button on your phone's native keyboard to seamlessly speak exactly how you feel!");
       }
     );
   };
@@ -182,7 +193,7 @@ export default function HomeScreen() {
   }
 
   return (
-    <LinearGradient colors={['#F9FAFB', '#F3F4F6']} style={styles.background}>
+    <LinearGradient colors={getGradientColors(globalEmotion || 'neutral')} style={styles.background}>
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.mainContent}>
           <View style={styles.header}>
@@ -196,7 +207,7 @@ export default function HomeScreen() {
             <Text style={styles.subtitle}>Personalized music for every vibe.</Text>
           </View>
 
-          <View style={styles.cameraPanel}>
+          <Animated.View style={[styles.cameraPanel, { transform: [{ scale: pulseAnim }], shadowColor: getGradientColors(globalEmotion || 'neutral')[0], shadowRadius: 30, shadowOpacity: 0.8 }]}>
             {imageUri ? (
               <Image source={{ uri: imageUri }} style={styles.imagePreview} />
             ) : (
@@ -218,7 +229,7 @@ export default function HomeScreen() {
                 <Text style={styles.secondaryText}>Gallery</Text>
               </TouchableOpacity>
             </View>
-          </View>
+          </Animated.View>
 
           <TouchableOpacity style={[styles.voiceTrigger, isListening && styles.listeningMode]} onPress={handleVoiceStart}>
             <Ionicons name={isListening ? "pulse" : "mic"} size={32} color="#FFF" />
