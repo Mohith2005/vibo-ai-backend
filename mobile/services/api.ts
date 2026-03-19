@@ -1,8 +1,37 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { API_BASE_URL, PYTHON_API_URL } from '../config/api';
+
+let dynamicNodeUrl = "https://vibo-node-api-mh2026.loca.lt";
+let dynamicPyUrl = "https://vibo-py-api-mh2026.loca.lt";
+
+export const getApiUrl = () => dynamicNodeUrl;
+export const getPyUrl = () => dynamicPyUrl;
+
+export const setApiUrls = async (nodeUrl: string, pyUrl: string) => {
+  dynamicNodeUrl = nodeUrl;
+  dynamicPyUrl = pyUrl;
+  await AsyncStorage.setItem('nodeUrl', nodeUrl);
+  await AsyncStorage.setItem('pyUrl', pyUrl);
+  
+  nodeApi.defaults.baseURL = nodeUrl;
+  pythonApi.defaults.baseURL = pyUrl;
+};
+
+export const loadSavedUrls = async () => {
+  const savedNode = await AsyncStorage.getItem('nodeUrl');
+  const savedPy = await AsyncStorage.getItem('pyUrl');
+  if (savedNode) {
+    dynamicNodeUrl = savedNode;
+    nodeApi.defaults.baseURL = savedNode;
+  }
+  if (savedPy) {
+    dynamicPyUrl = savedPy;
+    pythonApi.defaults.baseURL = savedPy;
+  }
+};
 
 export const nodeApi = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: dynamicNodeUrl,
   timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
@@ -11,7 +40,7 @@ export const nodeApi = axios.create({
 });
 
 export const pythonApi = axios.create({
-  baseURL: PYTHON_API_URL,
+  baseURL: dynamicPyUrl,
   timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
@@ -19,18 +48,4 @@ export const pythonApi = axios.create({
   },
 });
 
-nodeApi.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    console.error('Node API Error:', error.message);
-    return Promise.reject(error);
-  }
-);
-
-pythonApi.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    console.error('Python API Error:', error.message);
-    return Promise.reject(error);
-  }
-);
+loadSavedUrls();
