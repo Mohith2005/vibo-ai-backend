@@ -1,0 +1,716 @@
+{
+  "happy": [
+    {
+      "title": "Jimikki Ponnu",
+      "artist": "Thaman",
+      "movie": "Varisu",
+      "year": 2023,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Full Video_ Jimikki Ponnu (Tamil) Varisu _ Thalapathy Vijay _ Thaman S _ Vamshi Paidipally(MP3_160K).mp3",
+      "emotion": [
+        "happy",
+        "surprise"
+      ]
+    },
+    {
+      "title": "Arabic Kuthu",
+      "artist": "Anirudh",
+      "movie": "Beast",
+      "year": 2022,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Arabic Kuthu - Video Song _ Beast _ Thalapathy Vijay _ Pooja Hegde _ Sun Pictures _ Nelson _ Anirudh(MP3_160K).mp3",
+      "emotion": [
+        "happy",
+        "energetic"
+      ]
+    },
+    {
+      "title": "Private Party",
+      "artist": "Anirudh",
+      "movie": "Don",
+      "year": 2022,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Don - Private Party Music Video _ Sivakarthikeyan_ Priyanka Mohan _ Anirudh _ Jonita Gandhi _ Cibi(MP3_160K).mp3",
+      "emotion": [
+        "happy"
+      ]
+    },
+    {
+      "title": "Jolly O Gymkhana",
+      "artist": "Anirudh",
+      "movie": "Beast",
+      "year": 2022,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\JollyO Gymkhana - Video Song_ Beast _ Thalapathy Vijay _ Pooja Hegde _ Sun Pictures_ Nelson_ Anirudh(MP3_160K).mp3",
+      "emotion": [
+        "happy"
+      ]
+    },
+    {
+      "title": "Vaathi Coming",
+      "artist": "Anirudh",
+      "movie": "Master",
+      "year": 2021,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Master - Vaathi Coming Video _ Thalapathy Vijay _ Anirudh Ravichander _ Lokesh Kanagaraj(MP3_160K).mp3",
+      "emotion": [
+        "happy",
+        "energetic"
+      ]
+    },
+    {
+      "title": "Rowdy Baby",
+      "artist": "Yuvan Shankar Raja",
+      "movie": "Maari 2",
+      "year": 2018,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Maari 2 - Rowdy Baby (Video Song) _ Dhanush_ Sai Pallavi _ Yuvan Shankar Raja _ Balaji Mohan(MP3_160K).mp3",
+      "emotion": [
+        "happy",
+        "energetic"
+      ]
+    },
+    {
+      "title": "Vaadi Pulla Vaadi",
+      "artist": "Hiphop Tamizha",
+      "movie": "Meesaya Murukku",
+      "year": 2017,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\F-20's\\Hiphop Tamizha - Vaadi Pulla Vaadi (Official Music Video)(MP3_160K).mp3",
+      "emotion": [
+        "happy",
+        "surprise"
+      ]
+    },
+    {
+      "title": "Donu Donu Donu",
+      "artist": "Anirudh",
+      "movie": "Maari",
+      "year": 2015,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\Maari - Don_u Don_u Don_u Video _ Dhanush_ Kajal _ Anirudh _ Super Hit Song(MP3_160K).mp3",
+      "emotion": [
+        "happy"
+      ]
+    },
+    {
+      "title": "Aaluma Doluma",
+      "artist": "Anirudh",
+      "movie": "Vedalam",
+      "year": 2015,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Vedalam - Aaluma Doluma Video _ Ajith _ Anirudh Ravichander(MP3_160K).mp3",
+      "emotion": [
+        "happy",
+        "energetic"
+      ]
+    },
+    {
+      "title": "Hosanna",
+      "artist": "A.R Rahman",
+      "movie": "Vinnaithaandi Varuvaayaa",
+      "year": 2010,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\Vinnaithaandi Varuvaayaa - Hosanna Bluray 1080p HD(MP3_160K)(M4A_128K).m4a",
+      "emotion": [
+        "happy",
+        "romantic",
+        "calm"
+      ]
+    },
+    {
+      "title": "Appadi Podu",
+      "artist": "Vidyasagar",
+      "movie": "Ghilli",
+      "year": 2004,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\Appadi Podu - Video Song _ Ghilli _ Thalapathy Vijay _ Trisha _ Vidyasagar _ Sun Music(MP3_160K).mp3",
+      "emotion": [
+        "happy",
+        "energetic"
+      ]
+    }
+  ],
+  "sad": [
+    {
+      "title": "Nallai Allai",
+      "artist": "A.R Rahman",
+      "movie": "Kaatru Veliyidai",
+      "year": 2017,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\R-20's\\Kaatru Veliyidai - Nallai Allai _ Mani Ratnam_ AR Rahman _ Karthi(MP3_160K).mp3",
+      "emotion": [
+        "sad"
+      ]
+    },
+    {
+      "title": "Unakkenna Venum Sollu",
+      "artist": "Harris Jayaraj",
+      "movie": "Yennai Arindhaal",
+      "year": 2015,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Yennai Arindhaal - Unakkenna Venum Sollu Video _ Ajith_ Harris Jayaraj(MP3_160K).mp3",
+      "emotion": [
+        "sad"
+      ]
+    },
+    {
+      "title": "Kanave Kanave",
+      "artist": "Anirudh",
+      "movie": "David",
+      "year": 2013,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\Kanave Kanave Full Video Song _ David _ Vikram_ Jiiva_ Naaser_ Tabu_ Lara Dutta(MP3_160K).mp3",
+      "emotion": [
+        "sad"
+      ]
+    },
+    {
+      "title": "Po Nee Po",
+      "artist": "Anirudh",
+      "movie": "3",
+      "year": 2012,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\3 - Po Nee Po Video _ Dhanush_ Shruti _ Anirudh(MP3_160K).mp3",
+      "emotion": [
+        "sad"
+      ]
+    },
+    {
+      "title": "Why This Kolaveri Di",
+      "artist": "Anirudh",
+      "movie": "3",
+      "year": 2012,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\R-20's\\3 - Why This Kolaveri Di Official Video _ Dhanush _ Anirudh Ravichander _ Shruti Haasan(MP3_160K).mp3",
+      "emotion": [
+        "sad"
+      ]
+    },
+    {
+      "title": "Oru Naalil",
+      "artist": "Yuvan Shankar Raja",
+      "movie": "Pudhupettai",
+      "year": 2006,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Oru Naalil - Video Song _ Star Version _ Kavin _ Elan _ Yuvan Shankar Raja _ Think Tapes(MP3_160K).mp3",
+      "emotion": [
+        "sad"
+      ]
+    },
+    {
+      "title": "Kadhal Rojave",
+      "artist": "A.R Rahman",
+      "movie": "Roja",
+      "year": 1992,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\F-20's\\Kadhal Rojave 1080p HD(MP3_160K).mp3",
+      "emotion": [
+        "sad",
+        "calm"
+      ]
+    }
+  ],
+  "calm": [
+    {
+      "title": "Thalli Pogathey",
+      "artist": "A.R Rahman",
+      "movie": "Achcham Yenbadhu Madamaiyada",
+      "year": 2016,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\F-20's\\Thalli Pogathey - Video Song _ Achcham Yenbadhu Madamaiyada _ A R Rahman _ STR _ Gautham(MP3_160K).mp3",
+      "emotion": [
+        "calm",
+        "romantic"
+      ]
+    },
+    {
+      "title": "Hosanna",
+      "artist": "A.R Rahman",
+      "movie": "Vinnaithaandi Varuvaayaa",
+      "year": 2010,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\Vinnaithaandi Varuvaayaa - Hosanna Bluray 1080p HD(MP3_160K)(M4A_128K).m4a",
+      "emotion": [
+        "happy",
+        "romantic",
+        "calm"
+      ]
+    },
+    {
+      "title": "Nenjukkul Peidhidum",
+      "artist": "Harris Jayaraj",
+      "movie": "Vaaranam Aayiram",
+      "year": 2008,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\Vaaranam Aayiram - Nenjukkul Peidhidum Video _ Harris Jayaraj _ Suriya(MP3_160K).mp3",
+      "emotion": [
+        "calm",
+        "romantic"
+      ]
+    },
+    {
+      "title": "Munbe Vaa",
+      "artist": "A.R Rahman",
+      "movie": "Sillunu Oru Kadhal",
+      "year": 2006,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\Sillunu Oru Kadhal Tamil Movie Songs HD _ Munbe Vaa Song _ Suriya _ Bhumika _ Jyothika _ AR Rahman(MP3_160K).mp3",
+      "emotion": [
+        "calm",
+        "romantic"
+      ]
+    },
+    {
+      "title": "Vaseegara",
+      "artist": "Harris Jayaraj",
+      "movie": "Minnale",
+      "year": 2001,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\Minnale - Vaseegara Official Video _ Full HD _ Harris Jayaraj _ Madhavan _ Gautham V Menon(MP3_160K).mp3",
+      "emotion": [
+        "calm",
+        "romantic"
+      ]
+    },
+    {
+      "title": "Vennilave Vennilave",
+      "artist": "A.R Rahman",
+      "movie": "Minsara Kanavu",
+      "year": 1997,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\F-20's\\Vennilave vennilave - Minsara kanavu High Quality (HD) song(MP3_160K).mp3",
+      "emotion": [
+        "calm",
+        "romantic"
+      ]
+    },
+    {
+      "title": "Kadhal Rojave",
+      "artist": "A.R Rahman",
+      "movie": "Roja",
+      "year": 1992,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\F-20's\\Kadhal Rojave 1080p HD(MP3_160K).mp3",
+      "emotion": [
+        "sad",
+        "calm"
+      ]
+    }
+  ],
+  "angry": [
+    {
+      "title": "Vaathi Raid",
+      "artist": "Anirudh",
+      "movie": "Master",
+      "year": 2021,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Master - Vaathi Raid Lyric _ Thalapathy Vijay _ Anirudh Ravichander _ Lokesh Kanagaraj(MP3_160K).mp3",
+      "emotion": [
+        "angry",
+        "power"
+      ]
+    },
+    {
+      "title": "Petta Paraak",
+      "artist": "Anirudh",
+      "movie": "Petta",
+      "year": 2019,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Petta - Petta Paraak Video (Tamil) _ Rajinikanth _ Anirudh Ravichander(MP3_160K).mp3",
+      "emotion": [
+        "angry",
+        "power"
+      ]
+    },
+    {
+      "title": "Aalaporan Thamizhan",
+      "artist": "A.R Rahman",
+      "movie": "Mersal",
+      "year": 2017,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Mersal - Aalaporan Thamizhan Tamil Video _ Vijay _ A.R. Rahman(MP3_160K).mp3",
+      "emotion": [
+        "angry",
+        "power",
+        "energetic"
+      ]
+    },
+    {
+      "title": "Surviva",
+      "artist": "Anirudh",
+      "movie": "Vivegam",
+      "year": 2017,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Vivegam - Surviva Official Song Video _ Ajith Kumar _ Anirudh _ Siva(MP3_160K).mp3",
+      "emotion": [
+        "angry",
+        "power"
+      ]
+    },
+    {
+      "title": "Neruppu Da",
+      "artist": "Santhosh Narayanan",
+      "movie": "Kabali",
+      "year": 2016,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Kabali Songs _ Neruppu Da Song with Lyrics _ Rajinikanth _ Pa Ranjith _ Santhosh Narayanan(MP3_160K).mp3",
+      "emotion": [
+        "angry",
+        "power"
+      ]
+    },
+    {
+      "title": "Danga Maari Oodhari",
+      "artist": "Harris Jayaraj",
+      "movie": "Anegan",
+      "year": 2015,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Anegan - Danga Maari Oodhari Video _ Dhanush _ Harris _ Super Hit Dance Song(MP3_160K).mp3",
+      "emotion": [
+        "angry",
+        "energetic"
+      ]
+    },
+    {
+      "title": "Ethir Neechal",
+      "artist": "Anirudh",
+      "movie": "Ethir Neechal",
+      "year": 2013,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\Ethir Neechal - Un Paarvayil Video _ Sivakarthikeyan_ Priya(MP3_160K).mp3",
+      "emotion": [
+        "angry",
+        "energetic"
+      ]
+    },
+    {
+      "title": "Arjunar Villu",
+      "artist": "Vidyasagar",
+      "movie": "Ghilli",
+      "year": 2004,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\Arjunar Villu - Video Song _ Ghilli _ Thalapathy Vijay _ Trisha _ Vidyasagar _ Sun Music(MP3_160K).mp3",
+      "emotion": [
+        "angry",
+        "power"
+      ]
+    }
+  ],
+  "romantic": [
+    {
+      "title": "Thalli Pogathey",
+      "artist": "A.R Rahman",
+      "movie": "Achcham Yenbadhu Madamaiyada",
+      "year": 2016,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\F-20's\\Thalli Pogathey - Video Song _ Achcham Yenbadhu Madamaiyada _ A R Rahman _ STR _ Gautham(MP3_160K).mp3",
+      "emotion": [
+        "calm",
+        "romantic"
+      ]
+    },
+    {
+      "title": "Anbil Avan",
+      "artist": "A.R Rahman",
+      "movie": "Vinnaithaandi Varuvaayaa",
+      "year": 2010,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\Anbil Avan 8K_4K Video Song _ Vinnaithaandi Varuvaayaa _ A.R. Rahman _ STR_ Trisha(MP3_160K).mp3",
+      "emotion": [
+        "romantic"
+      ]
+    },
+    {
+      "title": "Hosanna",
+      "artist": "A.R Rahman",
+      "movie": "Vinnaithaandi Varuvaayaa",
+      "year": 2010,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\Vinnaithaandi Varuvaayaa - Hosanna Bluray 1080p HD(MP3_160K)(M4A_128K).m4a",
+      "emotion": [
+        "happy",
+        "romantic",
+        "calm"
+      ]
+    },
+    {
+      "title": "Kangal Irandal",
+      "artist": "James Vasanthan",
+      "movie": "Subramaniapuram",
+      "year": 2008,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\Subramaniapuram - Kangal Irandal Video _ James _ Jai(MP3_160K).mp3",
+      "emotion": [
+        "romantic"
+      ]
+    },
+    {
+      "title": "Nenjukkul Peidhidum",
+      "artist": "Harris Jayaraj",
+      "movie": "Vaaranam Aayiram",
+      "year": 2008,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\Vaaranam Aayiram - Nenjukkul Peidhidum Video _ Harris Jayaraj _ Suriya(MP3_160K).mp3",
+      "emotion": [
+        "calm",
+        "romantic"
+      ]
+    },
+    {
+      "title": "Munbe Vaa",
+      "artist": "A.R Rahman",
+      "movie": "Sillunu Oru Kadhal",
+      "year": 2006,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\Sillunu Oru Kadhal Tamil Movie Songs HD _ Munbe Vaa Song _ Suriya _ Bhumika _ Jyothika _ AR Rahman(MP3_160K).mp3",
+      "emotion": [
+        "calm",
+        "romantic"
+      ]
+    },
+    {
+      "title": "Vaseegara",
+      "artist": "Harris Jayaraj",
+      "movie": "Minnale",
+      "year": 2001,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\Minnale - Vaseegara Official Video _ Full HD _ Harris Jayaraj _ Madhavan _ Gautham V Menon(MP3_160K).mp3",
+      "emotion": [
+        "calm",
+        "romantic"
+      ]
+    },
+    {
+      "title": "Snehithane",
+      "artist": "A.R Rahman",
+      "movie": "Alaipayuthey",
+      "year": 2000,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\Snehithane Snehithane Video Song _ Alaipayuthey Tamil Movie _ Madhavan _ Shalini _ A.R. Rahman(MP3_160K).mp3",
+      "emotion": [
+        "romantic"
+      ]
+    },
+    {
+      "title": "Vennilave Vennilave",
+      "artist": "A.R Rahman",
+      "movie": "Minsara Kanavu",
+      "year": 1997,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\F-20's\\Vennilave vennilave - Minsara kanavu High Quality (HD) song(MP3_160K).mp3",
+      "emotion": [
+        "calm",
+        "romantic"
+      ]
+    }
+  ],
+  "energetic": [
+    {
+      "title": "Arabic Kuthu",
+      "artist": "Anirudh",
+      "movie": "Beast",
+      "year": 2022,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Arabic Kuthu - Video Song _ Beast _ Thalapathy Vijay _ Pooja Hegde _ Sun Pictures _ Nelson _ Anirudh(MP3_160K).mp3",
+      "emotion": [
+        "happy",
+        "energetic"
+      ]
+    },
+    {
+      "title": "Vaathi Coming",
+      "artist": "Anirudh",
+      "movie": "Master",
+      "year": 2021,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Master - Vaathi Coming Video _ Thalapathy Vijay _ Anirudh Ravichander _ Lokesh Kanagaraj(MP3_160K).mp3",
+      "emotion": [
+        "happy",
+        "energetic"
+      ]
+    },
+    {
+      "title": "Marana Mass",
+      "artist": "Anirudh",
+      "movie": "Petta",
+      "year": 2019,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Petta - Marana Mass Official Video (Tamil) _ Rajinikanth _ Anirudh Ravichander(MP3_160K).mp3",
+      "emotion": [
+        "energetic",
+        "surprise"
+      ]
+    },
+    {
+      "title": "Rowdy Baby",
+      "artist": "Yuvan Shankar Raja",
+      "movie": "Maari 2",
+      "year": 2018,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Maari 2 - Rowdy Baby (Video Song) _ Dhanush_ Sai Pallavi _ Yuvan Shankar Raja _ Balaji Mohan(MP3_160K).mp3",
+      "emotion": [
+        "happy",
+        "energetic"
+      ]
+    },
+    {
+      "title": "Sodakku",
+      "artist": "Anirudh",
+      "movie": "Thaanaa Serndha Koottam",
+      "year": 2018,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Thaanaa Serndha Koottam - Sodakku Tamil Video _ Suriya _ Anirudh l Keerthi Suresh(MP3_160K).mp3",
+      "emotion": [
+        "energetic",
+        "surprise"
+      ]
+    },
+    {
+      "title": "Aalaporan Thamizhan",
+      "artist": "A.R Rahman",
+      "movie": "Mersal",
+      "year": 2017,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Mersal - Aalaporan Thamizhan Tamil Video _ Vijay _ A.R. Rahman(MP3_160K).mp3",
+      "emotion": [
+        "angry",
+        "power",
+        "energetic"
+      ]
+    },
+    {
+      "title": "Danga Maari Oodhari",
+      "artist": "Harris Jayaraj",
+      "movie": "Anegan",
+      "year": 2015,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Anegan - Danga Maari Oodhari Video _ Dhanush _ Harris _ Super Hit Dance Song(MP3_160K).mp3",
+      "emotion": [
+        "angry",
+        "energetic"
+      ]
+    },
+    {
+      "title": "Aaluma Doluma",
+      "artist": "Anirudh",
+      "movie": "Vedalam",
+      "year": 2015,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Vedalam - Aaluma Doluma Video _ Ajith _ Anirudh Ravichander(MP3_160K).mp3",
+      "emotion": [
+        "happy",
+        "energetic"
+      ]
+    },
+    {
+      "title": "Ethir Neechal",
+      "artist": "Anirudh",
+      "movie": "Ethir Neechal",
+      "year": 2013,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\Ethir Neechal - Un Paarvayil Video _ Sivakarthikeyan_ Priya(MP3_160K).mp3",
+      "emotion": [
+        "angry",
+        "energetic"
+      ]
+    },
+    {
+      "title": "Otha Sollaala",
+      "artist": "G.V Prakash",
+      "movie": "Aadukalam",
+      "year": 2011,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\Aadukalam - Otha Sollaala Tamil Lyric Video _ Dhanush _ G.V. Prakash Kumar(MP3_160K).mp3",
+      "emotion": [
+        "energetic",
+        "surprise"
+      ]
+    },
+    {
+      "title": "Appadi Podu",
+      "artist": "Vidyasagar",
+      "movie": "Ghilli",
+      "year": 2004,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\Appadi Podu - Video Song _ Ghilli _ Thalapathy Vijay _ Trisha _ Vidyasagar _ Sun Music(MP3_160K).mp3",
+      "emotion": [
+        "happy",
+        "energetic"
+      ]
+    }
+  ],
+  "power": [
+    {
+      "title": "Vaathi Raid",
+      "artist": "Anirudh",
+      "movie": "Master",
+      "year": 2021,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Master - Vaathi Raid Lyric _ Thalapathy Vijay _ Anirudh Ravichander _ Lokesh Kanagaraj(MP3_160K).mp3",
+      "emotion": [
+        "angry",
+        "power"
+      ]
+    },
+    {
+      "title": "Petta Paraak",
+      "artist": "Anirudh",
+      "movie": "Petta",
+      "year": 2019,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Petta - Petta Paraak Video (Tamil) _ Rajinikanth _ Anirudh Ravichander(MP3_160K).mp3",
+      "emotion": [
+        "angry",
+        "power"
+      ]
+    },
+    {
+      "title": "Aalaporan Thamizhan",
+      "artist": "A.R Rahman",
+      "movie": "Mersal",
+      "year": 2017,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Mersal - Aalaporan Thamizhan Tamil Video _ Vijay _ A.R. Rahman(MP3_160K).mp3",
+      "emotion": [
+        "angry",
+        "power",
+        "energetic"
+      ]
+    },
+    {
+      "title": "Surviva",
+      "artist": "Anirudh",
+      "movie": "Vivegam",
+      "year": 2017,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Vivegam - Surviva Official Song Video _ Ajith Kumar _ Anirudh _ Siva(MP3_160K).mp3",
+      "emotion": [
+        "angry",
+        "power"
+      ]
+    },
+    {
+      "title": "Neruppu Da",
+      "artist": "Santhosh Narayanan",
+      "movie": "Kabali",
+      "year": 2016,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Kabali Songs _ Neruppu Da Song with Lyrics _ Rajinikanth _ Pa Ranjith _ Santhosh Narayanan(MP3_160K).mp3",
+      "emotion": [
+        "angry",
+        "power"
+      ]
+    },
+    {
+      "title": "Arjunar Villu",
+      "artist": "Vidyasagar",
+      "movie": "Ghilli",
+      "year": 2004,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\Arjunar Villu - Video Song _ Ghilli _ Thalapathy Vijay _ Trisha _ Vidyasagar _ Sun Music(MP3_160K).mp3",
+      "emotion": [
+        "angry",
+        "power"
+      ]
+    }
+  ],
+  "surprise": [
+    {
+      "title": "Jimikki Ponnu",
+      "artist": "Thaman",
+      "movie": "Varisu",
+      "year": 2023,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Full Video_ Jimikki Ponnu (Tamil) Varisu _ Thalapathy Vijay _ Thaman S _ Vamshi Paidipally(MP3_160K).mp3",
+      "emotion": [
+        "happy",
+        "surprise"
+      ]
+    },
+    {
+      "title": "Marana Mass",
+      "artist": "Anirudh",
+      "movie": "Petta",
+      "year": 2019,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Petta - Marana Mass Official Video (Tamil) _ Rajinikanth _ Anirudh Ravichander(MP3_160K).mp3",
+      "emotion": [
+        "energetic",
+        "surprise"
+      ]
+    },
+    {
+      "title": "Sodakku",
+      "artist": "Anirudh",
+      "movie": "Thaanaa Serndha Koottam",
+      "year": 2018,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\Music\\Thaanaa Serndha Koottam - Sodakku Tamil Video _ Suriya _ Anirudh l Keerthi Suresh(MP3_160K).mp3",
+      "emotion": [
+        "energetic",
+        "surprise"
+      ]
+    },
+    {
+      "title": "Vaadi Pulla Vaadi",
+      "artist": "Hiphop Tamizha",
+      "movie": "Meesaya Murukku",
+      "year": 2017,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\F-20's\\Hiphop Tamizha - Vaadi Pulla Vaadi (Official Music Video)(MP3_160K).mp3",
+      "emotion": [
+        "happy",
+        "surprise"
+      ]
+    },
+    {
+      "title": "Otha Sollaala",
+      "artist": "G.V Prakash",
+      "movie": "Aadukalam",
+      "year": 2011,
+      "file_path": "C:\\Users\\mohit\\OneDrive\\Desktop\\Face_Emotion_Detection(song)\\Songs\\90's\\Aadukalam - Otha Sollaala Tamil Lyric Video _ Dhanush _ G.V. Prakash Kumar(MP3_160K).mp3",
+      "emotion": [
+        "energetic",
+        "surprise"
+      ]
+    }
+  ]
+}

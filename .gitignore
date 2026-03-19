@@ -1,0 +1,32 @@
+# Node
+node_modules/
+.npm
+.yarn
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+
+# React Native / Expo
+.expo/
+dist/
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+*.apk
+*.aab
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+
+# Heavy Media Files (To avoid large Git pushes)
+Songs/
+*.mp3
+*.wav
+*.mp4

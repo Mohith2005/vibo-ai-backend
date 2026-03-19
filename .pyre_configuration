@@ -1,0 +1,12 @@
+{
+  "source_directories": [
+    "backend"
+  ],
+  "exclude": [
+    ".*/mobile/.*",
+    ".*/backend-node/.*",
+    ".*/backend/venv/.*",
+    ".*/Songs/.*",
+    ".*/scripts/.*"
+  ]
+}

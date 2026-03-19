@@ -1,0 +1,43 @@
+{
+  "cli": {
+    "version": ">= 10.0.0",
+    "appVersionSource": "local"
+  },
+
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_USE_DEV_SERVER": "true"
+      }
+    },
+
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_NETWORK_MODE": "auto"
+      }
+    },
+
+    "production": {
+      "distribution": "store",
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "env": {
+        "EXPO_PUBLIC_NETWORK_MODE": "auto"
+      }
+    }
+  },
+
+  "submit": {
+    "production": {}
+  }
+}

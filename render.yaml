@@ -1,0 +1,22 @@
+services:
+  # Node.js API Service
+  - type: web
+    name: vibo-node-api
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+    rootDir: backend-node
+
+  # Python Emotion API Service
+  - type: web
+    name: vibo-python-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app -b 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.0
+    rootDir: backend
