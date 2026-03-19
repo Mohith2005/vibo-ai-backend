@@ -1,4 +1,3 @@
-```javascript
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, SafeAreaView, ScrollView, TextInput } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -14,7 +13,6 @@ export default function SettingsScreen() {
     const [pyUrl, setPyUrl] = useState(getPyUrl());
 
     useEffect(() => {
-        // Refresh the placeholder values
         setNodeUrl(getApiUrl());
         setPyUrl(getPyUrl());
     }, []);
@@ -35,7 +33,7 @@ export default function SettingsScreen() {
 
     const handleSaveNetwork = async () => {
         await setApiUrls(nodeUrl, pyUrl);
-        Alert.alert('Network Saved!', 'The app will now route all traffic to these URLs.');
+        Alert.alert('Network Link Saved!', 'The app will now forcefully route all traffic to these custom URLs to bypass any carrier firewalls.');
     };
 
     return (
@@ -50,9 +48,12 @@ export default function SettingsScreen() {
                 </View>
 
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Developer Network Override</Text>
+                    <View style={styles.sectionHeader}>
+                        <Ionicons name="hardware-chip-outline" size={24} color="#4F46E5" />
+                        <Text style={styles.sectionTitleD}>Developer Network Override</Text>
+                    </View>
                     <Text style={styles.description}>
-                        If your mobile internet blocks Localtunnel, enter your computer's local IP address here (e.g. http://192.168.1.5:5001).
+                        If your Indian mobile internet provider (like Jio/Airtel) blocks free Localtunnels, enter your computer's local IP address or a custom Pinggy URL here.
                     </Text>
                     
                     <Text style={styles.label}>Node Music Server URL</Text>
@@ -62,6 +63,8 @@ export default function SettingsScreen() {
                         onChangeText={setNodeUrl} 
                         autoCapitalize="none"
                         autoCorrect={false}
+                        placeholderTextColor="#666"
+                        placeholder="e.g. http://192.168.1.5:5001"
                     />
 
                     <Text style={styles.label}>Python AI Server URL</Text>
@@ -71,10 +74,19 @@ export default function SettingsScreen() {
                         onChangeText={setPyUrl} 
                         autoCapitalize="none"
                         autoCorrect={false}
+                        placeholderTextColor="#666"
+                        placeholder="e.g. http://192.168.1.5:5000"
                     />
 
-                    <TouchableOpacity style={styles.button} onPress={handleSaveNetwork}>
-                        <Text style={styles.buttonText}>Save Network Link</Text>
+                    <TouchableOpacity style={styles.actionBtn} onPress={handleSaveNetwork}>
+                        <LinearGradient
+                            colors={['#4F46E5', '#3B82F6']}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 0 }}
+                            style={styles.gradient}
+                        >
+                            <Text style={styles.actionBtnText}>Save Network Config</Text>
+                        </LinearGradient>
                     </TouchableOpacity>
                 </View>
 
@@ -88,19 +100,14 @@ export default function SettingsScreen() {
                         Clear your locally stored emotion tracking history and cached playlists. This action cannot be undone.
                     </Text>
 
-                    <TouchableOpacity 
-                        style={styles.actionBtn} 
-                        onPress={handleClearHistory}
-                    >
+                    <TouchableOpacity style={styles.actionBtn} onPress={handleClearHistory}>
                         <LinearGradient
                             colors={['#EF4444', '#DC2626']}
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 0 }}
                             style={styles.gradient}
                         >
-                            <Text style={styles.actionBtnText}>
-                                Clear Local History
-                            </Text>
+                            <Text style={styles.actionBtnText}>Clear Local History</Text>
                         </LinearGradient>
                     </TouchableOpacity>
                 </View>
@@ -108,13 +115,13 @@ export default function SettingsScreen() {
                 <View style={styles.infoBox}>
                     <Ionicons name="cloud-done-outline" size={20} color="#10B981" />
                     <Text style={styles.infoText}>
-                        Vibo AI automatically connects to global production servers. No manual configuration required.
+                        Vibo AI automatically connects to global production servers unless manually overridden above.
                     </Text>
                 </View>
 
                 <View style={styles.footer}>
                     <Text style={styles.versionHeader}>VIBO AI</Text>
-                    <Text style={styles.versionSub}>v2.0.0 • Production Build</Text>
+                    <Text style={styles.versionSub}>v3.0.0 • Pro Build</Text>
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -132,6 +139,7 @@ const styles = StyleSheet.create({
     section: { backgroundColor: '#FEF2F2', borderRadius: 24, padding: 20, borderWidth: 1, borderColor: '#FEE2E2', marginTop: 24 },
     sectionHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
     sectionTitle: { fontSize: 18, fontWeight: '700', color: '#991B1B', marginLeft: 10 },
+    sectionTitleD: { fontSize: 18, fontWeight: '700', color: '#4F46E5', marginLeft: 10 },
     hint: { fontSize: 13, color: '#B91C1C', lineHeight: 18, marginBottom: 24 },
     actionBtn: { borderRadius: 14, overflow: 'hidden' },
     gradient: { paddingVertical: 14, alignItems: 'center' },
@@ -140,27 +148,8 @@ const styles = StyleSheet.create({
     infoText: { flex: 1, marginLeft: 12, fontSize: 14, color: '#047857', lineHeight: 20 },
     footer: { marginTop: 60, alignItems: 'center' },
     versionHeader: { fontSize: 18, fontWeight: '900', color: '#D1D5DB', letterSpacing: 2 },
-    versionSub: { fontSize: 12, color: '#D1D5DB', marginTop: 4, fontWeight: 'bold' }
-  description: {
-    color: '#a0a0a0',
-    fontSize: 14,
-    marginBottom: 15,
-    lineHeight: 20,
-  },
-  label: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 5,
-  },
-  input: {
-    backgroundColor: '#2a2a2a',
-    color: '#ffffff',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 15,
-    fontSize: 14,
-    borderWidth: 1,
-    borderColor: '#333',
-  },
+    versionSub: { fontSize: 12, color: '#D1D5DB', marginTop: 4, fontWeight: 'bold' },
+    description: { color: '#a0a0a0', fontSize: 13, marginBottom: 15, lineHeight: 18 },
+    label: { color: '#111827', fontSize: 14, fontWeight: '600', marginBottom: 5 },
+    input: { backgroundColor: '#f3f4f6', color: '#111827', borderRadius: 8, padding: 12, marginBottom: 15, fontSize: 14, borderWidth: 1, borderColor: '#e5e7eb' },
 });
