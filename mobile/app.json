@@ -76,10 +76,11 @@
     ],
     "experiments": {
       "typedRoutes": true,
-      "reactCompiler": false
-    },
     "extra": {
-      "router": {}
+      "router": {},
+      "eas": {
+        "projectId": "ae24b4e1-56ff-4f89-b59f-b1a0d9c07ab3"
+      }
     },
     "owner": "MOHITH20052"
   }
