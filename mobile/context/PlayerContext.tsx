@@ -5,7 +5,7 @@ import * as Sharing from 'expo-sharing';
 import { Share } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
-import { nodeApi } from '../services/api';
+import { nodeApi, getApiUrl } from '../services/api';
 import { playerService } from '../services/playerService';
 
 export interface MongoSong {
@@ -181,7 +181,10 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                 }
             };
 
-            await playerService.loadAndPlay(song.audioUrl, statusCallback);
+            const backendUrl = getApiUrl();
+            const secureAudioStream = song.audioUrl.startsWith('http') ? song.audioUrl : `${backendUrl}${song.audioUrl}`;
+
+            await playerService.loadAndPlay(secureAudioStream, statusCallback);
             await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
             addToHistory(emo, conf, song._id);

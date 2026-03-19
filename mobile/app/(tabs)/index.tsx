@@ -9,6 +9,7 @@ import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import * as Speech from 'expo-speech';
 import * as Haptics from 'expo-haptics';
+import { Audio } from 'expo-av';
 
 import { detectEmotionFromImage } from '../../services/emotionService';
 import { startVoiceRecognition, detectToneFromText } from '../../services/voiceService';
@@ -49,6 +50,12 @@ export default function HomeScreen() {
   }, []);
 
   const handleVoiceStart = async () => {
+    const { status } = await Audio.requestPermissionsAsync();
+    if (status !== 'granted') {
+        alert("Microphone permission is required to detect your vibe.");
+        return;
+    }
+
     setIsListening(true);
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     
@@ -59,8 +66,7 @@ export default function HomeScreen() {
       },
       (error) => {
         setIsListening(false);
-        Speech.speak("Vibo is listening. (Mocking for dev environment)");
-        setTimeout(() => analyzeEmotion(null, "cheer me up"), 2000);
+        alert("Microphone error. Did you grant Google Audio permissions?");
       }
     );
   };
