@@ -3,7 +3,7 @@ import { API_BASE_URL, PYTHON_API_URL } from '../config/api';
 
 export const nodeApi = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
     'Bypass-Tunnel-Reminder': 'true'
@@ -12,7 +12,7 @@ export const nodeApi = axios.create({
 
 export const pythonApi = axios.create({
   baseURL: PYTHON_API_URL,
-  timeout: 15000,
+  timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
     'Bypass-Tunnel-Reminder': 'true'
