@@ -6,6 +6,7 @@ export const nodeApi = axios.create({
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
+    'Bypass-Tunnel-Reminder': 'true'
   },
 });
 
@@ -14,6 +15,7 @@ export const pythonApi = axios.create({
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
+    'Bypass-Tunnel-Reminder': 'true'
   },
 });
 
