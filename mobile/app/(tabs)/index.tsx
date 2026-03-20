@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator, SafeAreaView, Dimensions, Animated, Easing, ScrollView, TextInput } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator, SafeAreaView, Dimensions, Animated, Easing, ScrollView, TextInput, Linking, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -63,7 +63,14 @@ export default function HomeScreen() {
   const handleVoiceStart = async () => {
     const { status } = await Audio.requestPermissionsAsync();
     if (status !== 'granted') {
-        alert("Microphone permission is required to detect your vibe.");
+        Alert.alert(
+            "Microphone Permission Denied",
+            "Your Android system has completely blocked Vibo AI from using the microphone. Please open Android Settings to manually allow it!",
+            [
+                { text: "Cancel", style: "cancel" },
+                { text: "Open Settings", onPress: () => Linking.openSettings() }
+            ]
+        );
         return;
     }
 

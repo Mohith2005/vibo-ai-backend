@@ -8,25 +8,30 @@ export const getApiUrl = () => dynamicNodeUrl;
 export const getPyUrl = () => dynamicPyUrl;
 
 export const setApiUrls = async (nodeUrl: string, pyUrl: string) => {
-  dynamicNodeUrl = nodeUrl;
-  dynamicPyUrl = pyUrl;
-  await AsyncStorage.setItem('nodeUrl', nodeUrl);
-  await AsyncStorage.setItem('pyUrl', pyUrl);
+  const cleanNodeUrl = nodeUrl.replace(/\/+$/, "");
+  const cleanPyUrl = pyUrl.replace(/\/+$/, "");
   
-  nodeApi.defaults.baseURL = nodeUrl;
-  pythonApi.defaults.baseURL = pyUrl;
+  dynamicNodeUrl = cleanNodeUrl;
+  dynamicPyUrl = cleanPyUrl;
+  await AsyncStorage.setItem('nodeUrl', cleanNodeUrl);
+  await AsyncStorage.setItem('pyUrl', cleanPyUrl);
+  
+  nodeApi.defaults.baseURL = cleanNodeUrl;
+  pythonApi.defaults.baseURL = cleanPyUrl;
 };
 
 export const loadSavedUrls = async () => {
   const savedNode = await AsyncStorage.getItem('nodeUrl');
   const savedPy = await AsyncStorage.getItem('pyUrl');
   if (savedNode) {
-    dynamicNodeUrl = savedNode;
-    nodeApi.defaults.baseURL = savedNode;
+    const cleanNode = savedNode.replace(/\/+$/, "");
+    dynamicNodeUrl = cleanNode;
+    nodeApi.defaults.baseURL = cleanNode;
   }
   if (savedPy) {
-    dynamicPyUrl = savedPy;
-    pythonApi.defaults.baseURL = savedPy;
+    const cleanPy = savedPy.replace(/\/+$/, "");
+    dynamicPyUrl = cleanPy;
+    pythonApi.defaults.baseURL = cleanPy;
   }
 };
 
