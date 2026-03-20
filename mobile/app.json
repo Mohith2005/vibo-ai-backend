@@ -72,7 +72,8 @@
           "speechRecognitionPermission": "Allow Vibo AI to recognize your voice tone."
         }
       ],
-      "./plugins/withAndroidXFix"
+      "./plugins/withAndroidXFix",
+      "./plugins/withAndroidSpeech.js"
     ],
     "experiments": {
       "typedRoutes": true,
