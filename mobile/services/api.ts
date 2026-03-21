@@ -37,7 +37,7 @@ export const loadSavedUrls = async () => {
 
 export const nodeApi = axios.create({
   baseURL: dynamicNodeUrl,
-  timeout: 60000,
+  timeout: 120000,
   headers: {
     'Content-Type': 'application/json',
     'Bypass-Tunnel-Reminder': 'true'
@@ -46,11 +46,12 @@ export const nodeApi = axios.create({
 
 export const pythonApi = axios.create({
   baseURL: dynamicPyUrl,
-  timeout: 60000,
+  timeout: 120000,
   headers: {
     'Content-Type': 'application/json',
     'Bypass-Tunnel-Reminder': 'true'
   },
 });
+
 
 loadSavedUrls();

@@ -4,6 +4,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { usePlayer } from '../../context/PlayerContext';
+import ViewShot from 'react-native-view-shot';
+import * as Sharing from 'expo-sharing';
 
 const { width } = Dimensions.get('window');
 
@@ -35,6 +37,22 @@ import PlaylistComponent from '../../components/PlaylistComponent';
 
 export default function PlayerScreen() {
     const { currentSong, currentPlaylist, currentIndex, emotion, nextSong, prevSong, playPlaylist, playbackState } = usePlayer();
+    const viewShotRef = React.useRef<any>(null);
+
+    const shareVibe = async () => {
+        try {
+            if (viewShotRef.current) {
+                const uri = await viewShotRef.current.capture();
+                await Sharing.shareAsync(uri, {
+                    dialogTitle: 'Share your Vibo AI Vibe!',
+                    mimeType: 'image/jpeg',
+                });
+            }
+        } catch (error) {
+            console.error("Error sharing vibe card:", error);
+            Alert.alert("Share Failed", "Could not generate the vibe card.");
+        }
+    };
 
     if (!currentSong) {
         return (
@@ -48,15 +66,44 @@ export default function PlayerScreen() {
 
     const themeColor = emotionTheme[emotion] || "#1E3A5F";
 
+    const floatAnim = React.useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(floatAnim, { toValue: 1, duration: 8000, useNativeDriver: true, easing: Easing.inOut(Easing.ease) }),
+                Animated.timing(floatAnim, { toValue: 0, duration: 8000, useNativeDriver: true, easing: Easing.inOut(Easing.ease) })
+            ])
+        ).start();
+    }, []);
+
+    const translateY = floatAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -40] });
+    const scaleX = floatAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.3] });
+    const scaleY = floatAnim.interpolate({ inputRange: [0, 1], outputRange: [1, 1.4] });
+
     return (
-        <LinearGradient
-            colors={[themeColor, '#121212']}
-            locations={[0, 0.5]}
-            style={styles.background}
-        >
+        <View style={[styles.background, { backgroundColor: '#0A0A0A' }]}>
+            {/* Ambient Liquid Gradient Orb */}
+            <Animated.View style={[
+                StyleSheet.absoluteFill, 
+                { opacity: 0.85, transform: [{ translateY }, { scaleX }, { scaleY }] }
+            ]}>
+                <LinearGradient
+                    colors={[themeColor, 'transparent']}
+                    locations={[0, 0.7]}
+                    style={{
+                        position: 'absolute',
+                        top: -width * 0.4,
+                        left: -width * 0.5,
+                        width: width * 2,
+                        height: width * 2,
+                        borderRadius: width,
+                    }}
+                />
+            </Animated.View>
             <SafeAreaView style={styles.safeArea}>
                 <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-
+                    
                     <View style={styles.header}>
                         <TouchableOpacity onPress={() => router.navigate('/')} style={styles.backButton}>
                             <Ionicons name="chevron-down" size={32} color="white" />
@@ -67,18 +114,28 @@ export default function PlayerScreen() {
                             <View style={styles.brandDot} />
                         </View>
 
-                        <View style={styles.emotionBadge}>
+                        <TouchableOpacity style={styles.shareBadge} onPress={shareVibe}>
+                            <Ionicons name="share-social" size={18} color="white" style={{ marginRight: 6 }} />
                             <Text style={styles.emotionEmoji}>{getEmoji(emotion)}</Text>
-                            <Text style={styles.emotionText}>{emotion.toUpperCase()}</Text>
-                        </View>
+                            <Text style={styles.emotionText}>SHARE</Text>
+                        </TouchableOpacity>
                     </View>
 
-                    <MusicPlayerComponent
-                        currentSong={currentSong}
-                        emotion={emotion}
-                        onNext={nextSong}
-                        onPrev={prevSong}
-                    />
+                    <ViewShot ref={viewShotRef} options={{ format: "jpg", quality: 0.9 }} style={styles.viewShotContainer}>
+                        <LinearGradient colors={[themeColor, '#121212']} style={styles.watermarkGradient}>
+                            <View style={styles.watermarkHeader}>
+                                <Text style={styles.watermarkText}>VIBO AI APP</Text>
+                                <Text style={styles.watermarkEmotion}>{getEmoji(emotion)} {emotion.toUpperCase()}</Text>
+                            </View>
+                            
+                            <MusicPlayerComponent
+                                currentSong={currentSong}
+                                emotion={emotion}
+                                onNext={nextSong}
+                                onPrev={prevSong}
+                            />
+                        </LinearGradient>
+                    </ViewShot>
 
                     <PlaylistComponent
                         playlist={currentPlaylist}
@@ -88,7 +145,7 @@ export default function PlayerScreen() {
                     />
                 </ScrollView>
             </SafeAreaView>
-        </LinearGradient>
+        </View>
     );
 }
 
@@ -132,13 +189,15 @@ const styles = StyleSheet.create({
         backgroundColor: '#4F46E5',
         marginLeft: 2,
     },
-    emotionBadge: {
+    shareBadge: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.3)',
-        paddingHorizontal: 12,
-        paddingVertical: 6,
+        backgroundColor: 'rgba(255,255,255,0.2)',
+        paddingHorizontal: 16,
+        paddingVertical: 8,
         borderRadius: 20,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.3)'
     },
     emotionEmoji: {
         fontSize: 16,
@@ -168,5 +227,30 @@ const styles = StyleSheet.create({
         color: '#9CA3AF',
         textAlign: 'center',
         marginTop: 10,
+    },
+    viewShotContainer: {
+        width: '100%',
+        backgroundColor: 'transparent',
+    },
+    watermarkGradient: {
+        paddingVertical: 10,
+        paddingHorizontal: 10,
+        borderRadius: 20,
+        width: '100%',
+    },
+    watermarkHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+        marginBottom: 10,
+    },
+    watermarkText: {
+        color: 'rgba(255,255,255,0.5)',
+        fontWeight: 'bold',
+        letterSpacing: 2,
+    },
+    watermarkEmotion: {
+        color: 'rgba(255,255,255,0.8)',
+        fontWeight: 'bold',
     }
 });

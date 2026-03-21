@@ -1,4 +1,6 @@
-import Voice, { SpeechResultsEvent } from '@react-native-voice/voice';
+import { Audio } from 'expo-av';
+import * as FileSystem from 'expo-file-system';
+import { nodeApi } from './api';
 
 const MOOD_KEYWORDS: Record<string, string[]> = {
   happy: ['happy', 'great', 'awesome', 'excited', 'good', 'joy', 'wonderful', 'party', 'dance', 'fun', 'love'],
@@ -24,20 +26,74 @@ export const startVoiceRecognition = async (
   onResult: (text: string) => void,
   onError: (error: any) => void
 ) => {
+  let recording: Audio.Recording | null = null;
   try {
-    Voice.onSpeechResults = (e: SpeechResultsEvent) => {
-      if (e.value && e.value.length > 0) {
-        onResult(e.value[0]);
-        Voice.stop();
-        Voice.destroy();
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: true,
+      playsInSilentModeIOS: true,
+    });
+
+    const customWavPreset = {
+        isMeteringEnabled: true,
+        android: {
+            extension: '.wav',
+            outputFormat: Audio.AndroidOutputFormat.DEFAULT,
+            audioEncoder: Audio.AndroidAudioEncoder.DEFAULT,
+            sampleRate: 44100,
+            numberOfChannels: 1,
+            bitRate: 128000,
+        },
+        ios: {
+            extension: '.wav',
+            audioQuality: Audio.IOSAudioQuality.HIGH,
+            sampleRate: 44100,
+            numberOfChannels: 1,
+            bitRate: 128000,
+            linearPCMBitDepth: 16,
+            linearPCMIsBigEndian: false,
+            linearPCMIsFloat: false,
+        },
+        web: {
+            mimeType: 'audio/webm',
+            bitsPerSecond: 128000,
+        },
+    };
+
+    recording = new Audio.Recording();
+    await recording.prepareToRecordAsync(customWavPreset);
+    await recording.startAsync();
+
+    // Force precisely a 4-second recording burst for analysis
+    setTimeout(async () => {
+      try {
+        if (!recording) return;
+        await recording.stopAndUnloadAsync();
+        const uri = recording.getURI();
+        
+        if (!uri) throw new Error("Audio recording URI failed.");
+
+        // Convert the binary wav file seamlessly to Base64
+        const audioBase64 = await FileSystem.readAsStringAsync(uri, {
+          encoding: 'base64',
+        });
+
+        // Pipe directly to Node API
+        const response = await nodeApi.post('/api/transcribe', { audio_base64: audioBase64 });
+        
+        if (response.data && response.data.text) {
+          onResult(response.data.text);
+        } else {
+            // Did not hear anything clearly
+            onError(new Error("Voice unclear. Please try again."));
+        }
+      } catch (timeoutErr) {
+        console.error("Audio Encoding/Upload Failed:", timeoutErr);
+        onError(timeoutErr);
       }
-    };
-    Voice.onSpeechError = (e: any) => {
-      onError(e);
-      Voice.destroy();
-    };
-    await Voice.start('en-US');
+    }, 4000);
+
   } catch (err) {
+    console.error("Microphone Start Error:", err);
     onError(err);
   }
 };

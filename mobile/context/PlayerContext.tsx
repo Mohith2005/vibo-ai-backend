@@ -89,14 +89,24 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     const [emotionHistory, setEmotionHistory] = useState<EmotionRecord[]>([]);
     const [sleepTimer, setSleepTimerState] = useState<number | null>(null);
+    const sleepTimerMaxRef = useRef<number | null>(null);
 
     const setSleepTimer = (minutes: number | null) => {
+        sleepTimerMaxRef.current = minutes;
         setSleepTimerState(minutes);
+        if (minutes === null) {
+            playerService.setVolume(1.0); // Restore volume entirely if cancelled
+        }
     };
 
     useEffect(() => {
-        let interval: NodeJS.Timeout;
+        let interval: ReturnType<typeof setInterval>;
         if (sleepTimer !== null && sleepTimer > 0) {
+            // Drop the actual track volume proportionally
+            if (sleepTimerMaxRef.current) {
+               playerService.setVolume(sleepTimer / sleepTimerMaxRef.current);
+            }
+
             interval = setInterval(() => {
                 setSleepTimerState(prev => (prev && prev > 1 ? prev - 1 : 0));
             }, 60000);
@@ -104,7 +114,9 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             if (playbackState.isPlaying) {
                 playerService.pause();
             }
+            playerService.setVolume(1.0); // Reset for their next morning session
             setSleepTimerState(null);
+            sleepTimerMaxRef.current = null;
         }
         return () => clearInterval(interval);
     }, [sleepTimer]);
@@ -182,10 +194,20 @@ export const PlayerProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             };
 
             const backendUrl = getApiUrl();
-            const secureAudioStream = song.audioUrl.startsWith('http') ? song.audioUrl : `${backendUrl}${song.audioUrl}`;
+            const rawAudioUrl = song.audioUrl || '';
+            const secureAudioStream = rawAudioUrl.startsWith('http') ? rawAudioUrl : (rawAudioUrl ? `${backendUrl}${rawAudioUrl}` : '');
 
             // Save history BEFORE requesting the heavy audio stream so analytics are perfectly tracked
             addToHistory(emo, conf, song._id);
+            
+            setCurrentSong(song);
+            setEmotion(emo);
+
+            if (!secureAudioStream) {
+                console.warn(`No audio stream for ${song.title}. Displaying metadata only.`);
+                setPlaybackState({ isPlaying: true, progress: 0, position: 0, duration: 10000 });
+                return;
+            }
 
             await playerService.loadAndPlay(secureAudioStream, statusCallback);
             await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

@@ -33,6 +33,10 @@ export class PlayerService {
     if (this.sound) await this.sound.setPositionAsync(millis);
   }
 
+  async setVolume(volume: number) {
+    if (this.sound) await this.sound.setVolumeAsync(Math.max(0, Math.min(1, volume)));
+  }
+
   async cleanup() {
     if (this.sound) {
       await this.sound.unloadAsync();

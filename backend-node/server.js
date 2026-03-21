@@ -1,19 +1,18 @@
 require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-
-const Song = require('./models/Song');
 const fs = require('fs');
 const path = require('path');
-const csv = require('csv-parser');
-const EmotionHistory = require('./models/EmotionHistory');
-const os = require('os'); // Auto-detect IP
+const os = require('os');
+const axios = require('axios'); // Added for Reverse Proxy
 
 const app = express();
 const PORT = process.env.PORT || 5001;
+
+// Trust proxy for Ngrok/Cloud hosting (to prevent rate-limit false-positives)
+app.set('trust proxy', 1);
 
 function getLocalIP() {
     const interfaces = os.networkInterfaces();
@@ -29,10 +28,18 @@ function getLocalIP() {
 
 const SYSTEM_IP = getLocalIP();
 
+// Load Local Emotion Playlists Engine
+const emotionPlaylistsData = JSON.parse(fs.readFileSync(path.join(__dirname, 'emotionPlaylists.json'), 'utf8'));
+
+// API 0: Static Local MP3 Streaming Endpoint
+// Exposes the physical Songs directory safely directly to the internet via Ngrok
+app.use('/api/stream', express.static(path.join(__dirname, '../Songs')));
+
 // Middleware
 app.use(helmet({ crossOriginResourcePolicy: false })); // Allow serving audio files cross-origin
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -41,239 +48,178 @@ const apiLimiter = rateLimit({
 });
 app.use('/api/', apiLimiter);
 
-// Log all requests
-app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} from ${req.ip}`);
-    next();
-});
+// Remove Spotify specific caches and auth
+let globalEmotionHistory = []; // In-Memory Database (100% Crash-Proof)
+let localCache = new Map(); // Quick cache for History Writes
 
-// Serve the local Songs directory over HTTP so the mobile app can stream them
-const SONGS_DIR = path.resolve(__dirname, '..', 'Songs');
-app.use('/audio', express.static(SONGS_DIR));
-console.log(`Serving local songs from ${SONGS_DIR} at /audio`);
-
-const { MongoMemoryServer } = require('mongodb-memory-server');
-
-
-let globalMongoServer = null;
-
-// 1. Get Songs by Emotion (Randomized for each request)
+// API 1: Generate AI Playlist (ZERO LATENCY STATIC ROUTING)
 app.get('/api/songs', async (req, res) => {
     try {
-        const { emotion, weather, intent } = req.query;
-        let query = {};
+        let { emotion, emotion2, intent } = req.query;
+        let targetEmotion = 'neutral';
         
-        // Voice Intent priority
         if (intent) {
-            if (intent.includes('cheer') || intent.includes('happy')) query.emotion = 'happy';
-            else if (intent.includes('relax') || intent.includes('calm')) query.emotion = 'neutral';
-            else if (intent.includes('party') || intent.includes('dance')) query.emotion = 'happy';
-            else if (intent.includes('angry') || intent.includes('pump')) query.emotion = 'angry';
+            const i = intent.toLowerCase();
+            if (i.includes('cheer') || i.includes('happy')) targetEmotion = 'happy';
+            else if (i.includes('relax') || i.includes('calm')) targetEmotion = 'calm';
+            else if (i.includes('party') || i.includes('dance')) targetEmotion = 'energetic';
+            else if (i.includes('angry') || i.includes('pump')) targetEmotion = 'angry';
         } else if (emotion) {
-            query.emotion = emotion.toLowerCase(); // Ensure emotion is lowercased if present
-            // Handle Synonyms/Robustness
-            if (query.emotion === 'calm') query.emotion = 'neutral';
+            targetEmotion = emotion.toLowerCase();
+            if (targetEmotion === 'neutral') targetEmotion = 'calm';
         }
 
-        let songs = await Song.find(query);
-        
-        // Weather Blending: If it's rainy/cloudy, favor specific songs
-        if (weather && (weather.includes('rain') || weather.includes('cloud'))) {
-            // Find lo-fi or melancholic neutral songs if it's rainy
-            const rainySongs = await Song.find({ 
-                emotion: 'neutral',
-                $or: [{ title: /lo-fi/i }, { title: /relax/i }, { title: /rain/i }]
-            });
-            if (rainySongs.length > 0 && Math.random() > 0.5) {
-                songs = [...rainySongs, ...songs];
+        let targetEmotionList = emotionPlaylistsData[targetEmotion] || emotionPlaylistsData['calm'];
+        let targetEmotionList2 = null;
+        if (emotion2) {
+            let t2 = emotion2.toLowerCase();
+            if (t2 === 'neutral') t2 = 'calm';
+            targetEmotionList2 = emotionPlaylistsData[t2];
+        }
+
+        // --- GAMIFICATION: PREMIUM FOLDER UNLOCKS ---
+        const userLevel = globalEmotionHistory.length;
+        let isNewUnlock = false;
+
+        if (userLevel < 3) {
+            targetEmotionList = targetEmotionList.filter(s => !s.file_path.includes("90's Tamil Golden Era"));
+            if (targetEmotionList2) {
+                targetEmotionList2 = targetEmotionList2.filter(s => !s.file_path.includes("90's Tamil Golden Era"));
             }
+        } else if (userLevel >= 3) {
+            // Check if this is exactly the third scan
+            if (globalEmotionHistory.length === 3) isNewUnlock = true;
         }
 
-        // If still no songs found, fallback to neutral
-        if (songs.length === 0 && (!query.emotion || query.emotion !== 'neutral')) {
-            songs = await Song.find({ emotion: 'neutral' });
+        if (targetEmotionList.length === 0) targetEmotionList = emotionPlaylistsData['calm'];
+
+        // Genuine Premium Randomizer Engine
+        let finalSelection = [];
+        let shuffled1 = [...targetEmotionList].sort(() => 0.5 - Math.random());
+        
+        if (targetEmotionList2 && targetEmotionList2.length > 0) {
+            let shuffled2 = [...targetEmotionList2].sort(() => 0.5 - Math.random());
+            // 👯 Vibe Blend (Couples Mode): 15 songs from Person A, 15 from Person B
+            finalSelection = [...shuffled1.slice(0, 15), ...shuffled2.slice(0, 15)];
+            // Interleave them dynamically
+            finalSelection = finalSelection.sort(() => 0.5 - Math.random());
+        } else {
+            finalSelection = shuffled1.slice(0, 30);
         }
 
-        // Randomize and limit
-        for (let i = songs.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [songs[i], songs[j]] = [songs[j], songs[i]];
-        }
+        res.setHeader('X-Vibo-Unlock', isNewUnlock ? 'true' : 'false');
+        
+        // Secure mapping pipeline converting physical paths into HTTP UI Streams
+        const tracks = finalSelection.map(s => {
+            let relativePath = '';
+            // Normalize slashes to forward slashes
+            const genericPath = s.file_path.replace(/\\/g, '/');
+            const genericIndex = genericPath.indexOf('/Songs/');
+            if (genericIndex !== -1) {
+                relativePath = genericPath.substring(genericIndex + 7);
+            } else {
+                // Try matching just Songs/ if it starts with it
+                const startStr = 'Songs/';
+                const startIndex = genericPath.indexOf(startStr);
+                if (startIndex !== -1) {
+                    relativePath = genericPath.substring(startIndex + startStr.length);
+                } else {
+                    relativePath = path.basename(s.file_path);
+                }
+            }
 
-        res.json(songs.slice(0, 10)); // Return top 10 for AI Smart Playlist
+            const songObj = {
+                _id: `vibo_local_${Math.random().toString(36).substring(7)}`,
+                title: s.title,
+                artist: s.artist,
+                movie: s.movie || 'Local Collection',
+                emotion: targetEmotion,
+                audioUrl: `/api/stream/${encodeURI(relativePath)}`,
+                coverImage: 'https://picsum.photos/400'
+            };
+            localCache.set(songObj._id, songObj);
+            return songObj;
+        });
+
+        return res.json(tracks);
     } catch (err) {
-        res.status(500).json({ error: 'Server error fetching songs', details: err.message });
+        console.error("Local Playlist Generation Error:", err.message);
+        return res.status(500).json({ error: 'Failed to build local playlist.' });
     }
 });
 
-// Helper to recursively get all files in a directory
-function getAllFiles(dirPath, arrayOfFiles) {
-    const files = fs.readdirSync(dirPath);
-    arrayOfFiles = arrayOfFiles || [];
-
-    files.forEach(function(file) {
-        if (fs.statSync(dirPath + "/" + file).isDirectory()) {
-            arrayOfFiles = getAllFiles(dirPath + "/" + file, arrayOfFiles);
-        } else {
-            if (file.toLowerCase().endsWith('.mp3')) {
-                arrayOfFiles.push(path.join(dirPath, "/", file));
-            }
-        }
-    });
-
-    return arrayOfFiles;
-}
-
-// SMARTER CATEGORIZATION LOGIC
-function guessEmotionFromPath(filePath) {
-    const lowerPath = filePath.toLowerCase();
-    
-    // Keyword based matching
-    if (lowerPath.includes('party') || lowerPath.includes('dance') || lowerPath.includes('happy') || lowerPath.includes('joy') || lowerPath.includes('celebration') || lowerPath.includes('upbeat') || lowerPath.includes('cheerful') || lowerPath.includes('energetic')) return 'happy';
-    if (lowerPath.includes('sad') || lowerPath.includes('pain') || lowerPath.includes('cry') || lowerPath.includes('broken') || lowerPath.includes('lonely') || lowerPath.includes('melancholy') || lowerPath.includes('emotional') || lowerPath.includes('heartbreak')) return 'sad';
-    if (lowerPath.includes('angry') || lowerPath.includes('fight') || lowerPath.includes('warrior') || lowerPath.includes('power') || lowerPath.includes('aggressive') || lowerPath.includes('heavy') || lowerPath.includes('metal') || lowerPath.includes('rock')) return 'angry';
-    if (lowerPath.includes('surprise') || lowerPath.includes('shock') || lowerPath.includes('wow') || lowerPath.includes('magic') || lowerPath.includes('wonder') || lowerPath.includes('unexpected')) return 'surprise';
-    if (lowerPath.includes('fear') || lowerPath.includes('horror') || lowerPath.includes('ghost') || lowerPath.includes('scary') || lowerPath.includes('dark') || lowerPath.includes('creepy') || lowerPath.includes('thriller')) return 'fear';
-    if (lowerPath.includes('disgust') || lowerPath.includes('bad') || lowerPath.includes('hate') || lowerPath.includes('nasty') || lowerPath.includes('gross')) return 'disgust';
-    
-    // Check specific folder names if they exist in the path
-    if (lowerPath.includes('melody') || lowerPath.includes('calm') || lowerPath.includes('relax') || lowerPath.includes('peaceful') || lowerPath.includes('lofi') || lowerPath.includes('chill') || lowerPath.includes('ambient') || lowerPath.includes('sleep') || lowerPath.includes('soft')) return 'neutral';
-
-    // Default to a balanced distribution if no keywords match
-    const emotions = ['happy', 'sad', 'angry', 'neutral', 'surprise', 'fear', 'disgust'];
-    // Use hash of filepath to keep it consistent
-    let hash = 0;
-    for (let i = 0; i < lowerPath.length; i++) {
-        hash = ((hash << 5) - hash) + lowerPath.charCodeAt(i);
-        hash |= 0; 
-    }
-    return emotions[Math.abs(hash) % emotions.length];
-}
-
-// Revised loadSongs to scan all local files and categorize them
-async function loadSongs() {
-    console.log(`Scanning local Songs directory: ${SONGS_DIR}`);
-    const allFiles = getAllFiles(SONGS_DIR);
-    console.log(`Found ${allFiles.length} MP3 files.`);
-
-    const songs = [];
-
-    allFiles.forEach((absoluteFilePath, index) => {
-        const fileName = path.basename(absoluteFilePath, '.mp3');
-        const emotion = guessEmotionFromPath(absoluteFilePath);
-
-        // Convert absolute Windows path to a relative URL served by Express /audio
-        const absolutePath = absoluteFilePath.replace(/\\/g, '/');
-        const songsRoot = SONGS_DIR.replace(/\\/g, '/');
-        const relPath = absolutePath.replace(songsRoot + '/', '');
-        const encodedPath = relPath.split('/').map(encodeURIComponent).join('/');
-        
-        const SERVER_HOST = process.env.SERVER_IP || SYSTEM_IP;
-        const httpUrl = `http://${SERVER_HOST}:${PORT}/audio/${encodedPath}`;
-        const fallbackCover = 'https://picsum.photos/seed/' + encodeURIComponent(fileName) + '/400/400';
-
-        // Extract Title and Artist from filename if it follows "Artist - Title" or just use filename
-        let title = fileName;
-        let artist = 'Local Artist';
-        if (fileName.includes(' - ')) {
-            const parts = fileName.split(' - ');
-            artist = parts[0].trim();
-            title = parts[1].trim();
-        }
-
-        songs.push({
-            title: title,
-            artist: artist,
-            movie: 'VibeFlow Library',
-            emotion: emotion,
-            audioUrl: httpUrl,
-            coverImage: fallbackCover
-        });
-    });
-
-    return songs;
-}
-
-// MongoDB Connection with Auto-Failover to In-Memory DB
-async function initializeDB() {
-    try {
-        console.log('Attempting to connect to Local MongoDB...');
-        await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/emotion-music-player', { serverSelectionTimeoutMS: 2000 });
-        console.log('MongoDB Connected Successfully');
-    } catch (err) {
-        console.log('Local MongoDB not serving! Booting In-Memory Demo MongoDB Environment...');
-        await mongoose.disconnect();
-        globalMongoServer = await MongoMemoryServer.create();
-        const uri = globalMongoServer.getUri();
-        await mongoose.connect(uri);
-        console.log('In-Memory MongoDB Active at', uri);
-    }
-
-    try {
-        // ALWAYS clear db and seed from latest Local Files on boot
-        await Song.deleteMany({});
-        console.log('Database cleared! Auto-seeding music from Local Songs Directory...');
-        const songs = await loadSongs();
-        await Song.insertMany(songs);
-        console.log('Music Database Bootstrapped!');
-    } catch (e) { console.error("Auto-seed error:", e); }
-}
-initializeDB();
-
-
-// 2. Save Emotion Detection History
-app.post('/api/emotion', async (req, res) => {
+// API 2: Save Emotion
+app.post('/api/emotion', (req, res) => {
     try {
         const { userId, emotion, confidence, songPlayed } = req.body;
-        
-        // Input validation
         if (!emotion || typeof emotion !== 'string' || !confidence || isNaN(confidence) || !songPlayed) {
             return res.status(400).json({ error: 'Invalid input parameters' });
         }
-        
-        console.log(`Saving history: ${emotion} (${confidence}%)`);
 
-        const newHistory = new EmotionHistory({
-            userId: userId || null, 
+        // History Integration with New Dynamic Memory Pool
+        const songDetails = localCache.get(songPlayed) || { title: `Local ID ${songPlayed}`, artist: 'Unknown Metadata', coverImage: '' };
+
+        const newRecord = {
+            _id: `hist_${Date.now()}_${Math.random()}`,
+            userId: userId || null,
             emotion,
             confidence: parseFloat(confidence),
-            songPlayed
-        });
+            songPlayed: songDetails,
+            detectedAt: new Date().toISOString()
+        };
 
-        await newHistory.save();
-        res.status(201).json({ success: true, history: newHistory });
+        globalEmotionHistory.unshift(newRecord);
+        if (globalEmotionHistory.length > 100) globalEmotionHistory.pop(); // Keep latest 100
+
+        res.status(201).json({ success: true, history: newRecord });
     } catch (err) {
-        console.error('History Save Error:', err.message);
         res.status(500).json({ error: 'Failed to save emotion history', details: err.message });
     }
 });
 
-// 3. Get Emotion History (Populating Song details)
-app.get('/api/emotion-history', async (req, res) => {
+// API 3: Get History
+app.get('/api/emotion-history', (req, res) => {
     try {
-        const history = await EmotionHistory.find()
-            .populate('songPlayed', 'title artist coverImage') // Get song details
-            .sort({ detectedAt: -1 })
-            .limit(50); // Get latest 50
-
-        res.json(history);
+        res.json(globalEmotionHistory.slice(0, 50));
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch history', details: err.message });
     }
 });
 
-// 4. (Bonus) Basic Analytics Dashboard Endpoint
-app.get('/api/analytics', async (req, res) => {
+// API 4: REVERSE PROXY FOR PYTHON AI SERVER
+// Ngrok only allows 1 free domain, so Node takes the domain and silently forwards AI traffic to Python locally!
+app.post('/detect_emotion', async (req, res) => {
     try {
-        // Group by emotion
-        const emotionCounts = await EmotionHistory.aggregate([
-            { $group: { _id: "$emotion", count: { $sum: 1 } } },
-            { $sort: { count: -1 } }
-        ]);
-
-        res.json({ emotionCounts });
+        console.log('Proxying Emotion Detection Request. Payload Size:', req.headers['content-length'] || 'Unknown');
+        // Automatically route the raw React Native JSON directly to local Python Port 5000
+        const pyResponse = await axios.post('http://127.0.0.1:5000/detect_emotion', req.body, {
+            headers: { 'Content-Type': 'application/json' },
+            maxBodyLength: Infinity, // Allow large Base64 strings
+            timeout: 120000 // 120 second timeout for AI processing
+        });
+        console.log('AI Detection Result:', pyResponse.data.dominant_emotion);
+        res.json(pyResponse.data);
     } catch (err) {
-        res.status(500).json({ error: 'Failed to compute analytics', details: err.message });
+
+        console.error("Python Proxy Error:", err.message);
+        res.status(502).json({ error: 'AI server takes too long. Please ensure face is clear.' });
+    }
+});
+
+// API 5: REVERSE PROXY FOR VOICE RECOGNITION (HEY VIBO)
+app.post('/api/transcribe', async (req, res) => {
+    try {
+        console.log('Proxying Voice Transcription Request. Payload Size:', req.headers['content-length'] || 'Unknown');
+        const pyResponse = await axios.post('http://127.0.0.1:5000/transcribe', req.body, {
+            headers: { 'Content-Type': 'application/json' },
+            maxBodyLength: Infinity,
+            timeout: 30000 // 30 seconds for speech analysis
+        });
+        console.log('Voice Transcription Result:', pyResponse.data.text);
+        res.json(pyResponse.data);
+    } catch (err) {
+        console.error("Python Voice Proxy Error:", err.message);
+        res.status(502).json({ error: 'Voice server takes too long or failed.' });
     }
 });
 

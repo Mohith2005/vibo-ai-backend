@@ -1,4 +1,7 @@
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1" # Force TensorFlow to use CPU only to prevent Windows GPU deadlocks!
+print("1/3: Python started successfully! Loading heavy Artificial Intelligence models...")
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_limiter import Limiter
@@ -8,7 +11,9 @@ import cv2
 import numpy as np
 import base64
 
+print("2/3: AI Models Loaded! Booting up the Server...")
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024 # 50MB limit
 # Allow CORS for all domains so the mobile app can connect easily
 CORS(app, resources={r"/*": {"origins": "*"}})
 
@@ -91,9 +96,20 @@ def detect_emotion():
     playlists['disgust'] = playlists['neutral'] # Calming/distracting for disgust
 
     try:
+        data = request.json
+        
+        # Support for Node.js fallback or manual override
+        if data and 'emotion_override' in data:
+            emotion = data['emotion_override']
+            return jsonify({
+                'success': True,
+                'dominant_emotion': emotion,
+                'confidence': 100,
+                'playlist': playlists.get(emotion, playlists['neutral'])
+            })
         # Input Validation (payload size restriction)
-        if request.content_length and request.content_length > 10 * 1024 * 1024:
-            return jsonify({'error': 'Payload to large. Max 10MB.'}), 413
+        if request.content_length and request.content_length > 50 * 1024 * 1024:
+            return jsonify({'error': 'Payload to large. Max 50MB.'}), 413
 
         # Check if the file is in the request
         if 'image' in request.files:
@@ -126,16 +142,37 @@ def detect_emotion():
         if img is None:
             return jsonify({'error': 'Invalid image format.'}), 400
 
-        # Perform emotion detection using DeepFace
-        # enforce_detection=False so it doesn't throw if face is slightly cropped
-        result = DeepFace.analyze(img, actions=['emotion'], enforce_detection=False)
+        # Perform emotion detection using DeepFace with optimized accuracy settings
+        # Use mediapipe for much better face detection than opencv
+        # adjust align=True to significantly improve emotion classification
+        try:
+            result = DeepFace.analyze(img, 
+                                    actions=['emotion'], 
+                                    enforce_detection=False,
+                                    detector_backend='mediapipe',
+                                    align=True)
+        except Exception as detection_err:
+            print(f"Mediapipe failed or missing, falling back to opencv: {detection_err}")
+            result = DeepFace.analyze(img, 
+                                    actions=['emotion'], 
+                                    enforce_detection=False,
+                                    detector_backend='opencv',
+                                    align=True)
         
-        # DeepFace returns a list if multiple faces are detected. We take the first one.
+        emotions_detected = []
         if isinstance(result, list):
-            result = result[0]
+            # Sort faces by size (optional) or just take the first two detected
+            for face in result[:2]:
+                emotions_detected.append(face.get('dominant_emotion'))
+        else:
+            emotions_detected.append(result.get('dominant_emotion'))
             
-        dominant_emotion = result.get('dominant_emotion')
-        emotion_scores = result.get('emotion')
+        dominant_emotion = emotions_detected[0] if emotions_detected else 'neutral'
+        secondary_emotion = emotions_detected[1] if len(emotions_detected) > 1 else None
+        
+        # Grab strictly the first face's detailed payload for standard processing
+        first_face = result[0] if isinstance(result, list) else result
+        emotion_scores = first_face.get('emotion')
         
         # DeepFace sometimes returns float32 which is not JSON serializable
         if emotion_scores:
@@ -144,6 +181,7 @@ def detect_emotion():
         return jsonify({
             'success': True,
             'dominant_emotion': dominant_emotion,
+            'secondary_emotion': secondary_emotion,
             'emotion_scores': emotion_scores,
             'playlist': playlists.get(dominant_emotion, playlists['neutral'])
         })
@@ -152,10 +190,54 @@ def detect_emotion():
         print("Error during emotion detection:", str(e))
         return jsonify({'success': False, 'error': str(e)}), 500
 
+import speech_recognition as sr
+import tempfile
+
+@app.route('/transcribe', methods=['POST'])
+@limiter.limit("30 per minute")
+def transcribe_audio():
+    try:
+        data = request.json
+        if not data or 'audio_base64' not in data:
+            return jsonify({'error': 'No audio_base64 provided'}), 400
+            
+        audio_bytes = base64.b64decode(data['audio_base64'])
+        
+        # Write to temp .wav file
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as temp_audio:
+            temp_audio.write(audio_bytes)
+            temp_file_path = temp_audio.name
+            
+        # Initialize Google Speech Recognition locally
+        recognizer = sr.Recognizer()
+        with sr.AudioFile(temp_file_path) as source:
+            audio_data = recognizer.record(source)
+            
+        try:
+            # Free STT conversion without API keys
+            text = recognizer.recognize_google(audio_data)
+            success = True
+        except sr.UnknownValueError:
+            text = "" # Could not understand audio
+            success = False
+            
+        # Cleanup
+        os.remove(temp_file_path)
+        
+        if success:
+            return jsonify({'success': True, 'text': text})
+        else:
+            return jsonify({'error': 'Audio unclear or no speech detected.'}), 422
+            
+    except Exception as e:
+        print("Error during transcription:", str(e))
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/', methods=['GET'])
 def index():
     return jsonify({"message": "Face Emotion Detection API is running. Use /detect_emotion POST endpoint."})
 
 if __name__ == '__main__':
     # Listen on all interfaces so the mobile app can reach it over the local network
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Debug forced to False entirely to prevent the Flask Auto-Reloader from booting duplicate AI models!
+    app.run(host='0.0.0.0', port=5000, debug=False)

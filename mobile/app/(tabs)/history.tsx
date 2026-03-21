@@ -54,7 +54,22 @@ export default function HistoryScreen() {
             case 'surprise': return '😲';
             case 'fear': return '😨';
             case 'disgust': return '🤢';
+            case 'calm': return '😌';
             default: return '🙂';
+        }
+    };
+
+    const getEmotionColor = (emo: string) => {
+        switch (emo.toLowerCase()) {
+            case 'happy': return '#FCD34D';
+            case 'sad': return '#60A5FA';
+            case 'angry': return '#F87171';
+            case 'neutral': return '#34D399';
+            case 'surprise': return '#A78BFA';
+            case 'fear': return '#9CA3AF';
+            case 'disgust': return '#059669';
+            case 'calm': return '#6EE7B7';
+            default: return '#D1D5DB';
         }
     };
 
@@ -108,10 +123,28 @@ export default function HistoryScreen() {
                         <Text style={styles.statValue}>{stats.topEmotion.toUpperCase()}</Text>
                     </View>
                     <View style={[styles.statBox, { borderLeftWidth: 1, borderColor: '#E5E7EB' }]}>
-                        <Text style={styles.statLabel}>Total Scans</Text>
-                        <Text style={styles.statValue}>{stats.totalScans}</Text>
+                        <Text style={styles.statLabel}>Vibe Streak</Text>
+                        <Text style={styles.statValue}>{stats.totalScans} 🔥</Text>
                     </View>
                 </View>
+
+                {/* Vibe Pattern Timeline */}
+                {emotionHistory.length > 0 && (
+                    <View style={styles.timelineContainer}>
+                        <Text style={styles.timelineLabel}>Your Vibe Pattern (Last 10)</Text>
+                        <View style={styles.timelineRow}>
+                            {emotionHistory.slice(0, 10).reverse().map((item, idx) => (
+                                <View key={idx} style={styles.timelineDotWrapper}>
+                                    <View style={[styles.timelineDot, { backgroundColor: getEmotionColor(item.emotion) }]} />
+                                    {idx < Math.min(emotionHistory.length, 10) - 1 && <View style={styles.timelineLine} />}
+                                </View>
+                            ))}
+                        </View>
+                        <Text style={styles.timelineSubText}>
+                            {emotionHistory[0].emotion === 'happy' ? "You're ending the week on a high note! 🌟" : "Keep tracking to build a beautiful emotional mosaic."}
+                        </Text>
+                    </View>
+                )}
 
                 {/* Smart Mood Booster Banner */}
                 {showMoodBooster && (
@@ -214,6 +247,45 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: '900',
         color: '#111827',
+    },
+    timelineContainer: {
+        paddingHorizontal: 20,
+        marginBottom: 20,
+    },
+    timelineLabel: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#374151',
+        marginBottom: 10,
+    },
+    timelineRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 10,
+    },
+    timelineDotWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    timelineDot: {
+        width: 16,
+        height: 16,
+        borderRadius: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+    },
+    timelineLine: {
+        width: 20,
+        height: 2,
+        backgroundColor: '#E5E7EB',
+    },
+    timelineSubText: {
+        fontSize: 12,
+        color: '#9CA3AF',
+        marginTop: 8,
+        fontStyle: 'italic',
     },
     moodBooster: {
         margin: 20,

@@ -60,6 +60,31 @@ export default function MusicPlayerComponent({ currentSong, emotion, onNext, onP
     }
   };
 
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    let hapticInterval: ReturnType<typeof setInterval>;
+    if (playbackState.isPlaying) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(scaleAnim, { toValue: 1.03, duration: 450, useNativeDriver: true }),
+          Animated.timing(scaleAnim, { toValue: 1.0, duration: 450, useNativeDriver: true }),
+        ])
+      ).start();
+
+      // Fire a subtle physical pulse every ~900ms to mimic a heartbeat/bass
+      hapticInterval = setInterval(() => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }, 900);
+    } else {
+      scaleAnim.stopAnimation();
+      Animated.spring(scaleAnim, { toValue: 1.0, useNativeDriver: true }).start();
+    }
+    return () => {
+        if (hapticInterval) clearInterval(hapticInterval);
+    };
+  }, [playbackState.isPlaying]);
+
   return (
     <View style={styles.container}>
       {/* Premium Sleep Timer Modal */}
@@ -128,12 +153,12 @@ export default function MusicPlayerComponent({ currentSong, emotion, onNext, onP
         </TouchableOpacity>
       </Modal>
 
-      <View style={styles.coverWrapper}>
+      <Animated.View style={[styles.coverWrapper, { transform: [{ scale: scaleAnim }] }]}>
         <Image 
           source={{ uri: currentSong.coverImage }} 
           style={styles.coverImage} 
         />
-      </View>
+      </Animated.View>
 
       <View style={styles.infoRow}>
         <View style={styles.textColumn}>

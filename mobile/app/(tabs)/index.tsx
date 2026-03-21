@@ -15,7 +15,69 @@ import { detectEmotionFromImage } from '../../services/emotionService';
 import { startVoiceRecognition, detectToneFromText } from '../../services/voiceService';
 import { nodeApi } from '../../services/api';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
+
+const RainParticle = ({ index }: { index: number }) => {
+  const xPos = React.useRef(Math.random() * width).current;
+  const animDuration = React.useRef(1500 + Math.random() * 1000).current;
+  const fallAnim = React.useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    Animated.loop(
+      Animated.timing(fallAnim, { toValue: 1, duration: animDuration, useNativeDriver: true, easing: Easing.linear })
+    ).start();
+  }, []);
+
+  const translateY = fallAnim.interpolate({ inputRange: [0, 1], outputRange: [-50, height + 50] });
+  const opacity = fallAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0.6, 0.6, 0] });
+
+  return (
+    <Animated.View style={{
+      position: 'absolute', left: xPos, top: 0, width: 2, height: 20, backgroundColor: 'rgba(255,255,255,0.4)',
+      transform: [{ translateY }], opacity
+    }} />
+  );
+};
+
+const SunParticle = ({ index }: { index: number }) => {
+  const xPos = React.useRef(Math.random() * width).current;
+  const yStart = React.useRef(Math.random() * height).current;
+  const size = React.useRef(Math.random() * 40 + 20).current;
+  const animDuration = React.useRef(3000 + Math.random() * 2000).current;
+  const fallAnim = React.useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    Animated.loop(
+      Animated.timing(fallAnim, { toValue: 1, duration: animDuration, useNativeDriver: true, easing: Easing.linear })
+    ).start();
+  }, []);
+
+  const translateY = fallAnim.interpolate({ inputRange: [0, 1], outputRange: [yStart, yStart - 100] });
+  const opacity = fallAnim.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0.6, 0] });
+
+  return (
+    <Animated.View style={{
+      position: 'absolute', left: xPos, top: 0, width: size, height: size, borderRadius: size / 2,
+      backgroundColor: 'rgba(253, 224, 71, 0.15)',
+      transform: [{ translateY }, { scale: opacity }], opacity
+    }} />
+  );
+};
+
+const WeatherParticles = ({ weather, emotion }: { weather: string | undefined, emotion: string }) => {
+  const isRain = weather === 'rainy' && ['sad', 'fear', 'neutral', 'calm'].includes(emotion);
+  const isSun = weather === 'sunny' && ['happy', 'surprise', 'neutral'].includes(emotion);
+  
+  if (!isRain && !isSun) return null;
+
+  const particles = Array.from({ length: 15 }).map((_, i) => i);
+
+  return (
+    <View style={StyleSheet.absoluteFill} pointerEvents="none">
+      {particles.map((i) => isRain ? <RainParticle key={`rain-${i}`} index={i} /> : <SunParticle key={`sun-${i}`} index={i} />)}
+    </View>
+  );
+};
 
 export default function HomeScreen() {
   const { currentSong, playbackState, togglePlayPause, playPlaylist, emotion: globalEmotion } = usePlayer();
@@ -30,14 +92,23 @@ export default function HomeScreen() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [detectedEmotion, setDetectedEmotion] = useState('');
   const [confidence, setConfidence] = useState(0);
+  const [vibeShift, setVibeShift] = useState<{ active: boolean, emotion: string, confidence: number } | null>(null);
 
   const pulseAnim = React.useRef(new Animated.Value(1)).current;
+  const glowAnim = React.useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, { toValue: 1.03, duration: 3000, useNativeDriver: true, easing: Easing.inOut(Easing.ease) }),
         Animated.timing(pulseAnim, { toValue: 1, duration: 3000, useNativeDriver: true, easing: Easing.inOut(Easing.ease) })
+      ])
+    ).start();
+
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(glowAnim, { toValue: 1.3, duration: 1200, useNativeDriver: true, easing: Easing.inOut(Easing.ease) }),
+        Animated.timing(glowAnim, { toValue: 1.0, duration: 1200, useNativeDriver: true, easing: Easing.inOut(Easing.ease) })
       ])
     ).start();
   }, []);
@@ -84,13 +155,13 @@ export default function HomeScreen() {
       },
       (error) => {
         setIsListening(false);
-        alert("Native Voice Blocked! Tip: Tap the Text-box below and use the powerful 🎤 Microphone button on your phone's native keyboard to seamlessly speak exactly how you feel!");
+        alert(error.message || "Voice recognition failed.");
       }
     );
   };
 
-  const getEmojiForEmotion = (emo: string) => {
-    switch (emo) {
+  const getSingleEmoji = (e: string) => {
+    switch (e) {
       case 'happy': return '😊';
       case 'sad': return '😢';
       case 'angry': return '😡';
@@ -100,6 +171,14 @@ export default function HomeScreen() {
       case 'disgust': return '🤢';
       default: return '🙂';
     }
+  };
+
+  const getEmojiForEmotion = (emo: string) => {
+    if (emo.includes(' & ')) {
+      const [e1, e2] = emo.split(' & ');
+      return `${getSingleEmoji(e1)} & ${getSingleEmoji(e2)}`;
+    }
+    return getSingleEmoji(emo);
   };
 
   const getGradientColors = (emo: string): readonly [string, string, ...string[]] => {
@@ -116,29 +195,79 @@ export default function HomeScreen() {
   };
 
   const pickImage = async () => {
+    if (loading) return; // Prevent double-tap
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
-      quality: 1,
+      quality: 0.5,
       base64: true,
     });
     if (!result.canceled) handleImage(result.assets[0]);
   };
 
   const takePhoto = async () => {
+    if (loading) return; // Prevent double-tap
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
     if (permissionResult.granted === false) return alert("Camera access required");
     let result = await ImagePicker.launchCameraAsync({
       allowsEditing: true,
-      quality: 1,
+      quality: 0.5,
       base64: true,
     });
     if (!result.canceled) handleImage(result.assets[0]);
   };
 
   const handleImage = (asset: any) => {
+    if (loading) return;
     setImageUri(asset.uri);
     analyzeEmotion(asset.base64);
+  };
+
+  const fetchAndPlaySongs = async (emo: string, confNum: number, voiceIntent?: string, emo2?: string | null) => {
+    try {
+      setIsTransitioning(true);
+      const params = new URLSearchParams({
+        emotion: emo,
+        weather: weather?.condition.toLowerCase() || '',
+        intent: voiceIntent || '',
+        session: Math.random().toString(36).substring(7)
+      });
+      if (emo2) params.append('emotion2', emo2);
+
+      const playlistResponse = await nodeApi.get(`/api/songs?${params.toString()}`);
+      const playlist = playlistResponse.data;
+      const isNewUnlock = playlistResponse.headers['x-vibo-unlock'] === 'true';
+
+      if (isNewUnlock) {
+        Alert.alert(
+          "🎉 Level Up! 90s Era Unlocked! 🎉", 
+          "You've tracked your vibe 3 times! We've permanently unlocked the legendary 90s Tamil Golden Era cassettes for your future plays."
+        );
+      } else if (emo2) {
+        Alert.alert(
+          "👯 Vibe Blend (Dual Scan)! 👯", 
+          `We detected two faces! We've mathematically mixed a ${emo.toUpperCase()} & ${emo2.toUpperCase()} playlist just for you both!`
+        );
+      }
+
+      setTimeout(async () => {
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        const playerEmo = emo2 ? `${emo} & ${emo2}` : emo;
+        playPlaylist(playlist, 0, playerEmo, confNum);
+        setIsTransitioning(false);
+        setImageUri(null);
+        router.navigate('/player');
+      }, 3500);
+    } catch (err: any) {
+      console.error("Vibo API Error:", err.response?.data || err.message);
+      if (err.response?.status === 403 || err.response?.status === 404) {
+        setErrorMsg("Spotify Music restricted: Active Premium subscription is required.");
+      } else {
+        setErrorMsg(err.response?.data?.error || err.message || 'Error communicating with Vibo AI servers');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const analyzeEmotion = async (base64String: string | null | undefined, voiceIntent?: string) => {
@@ -146,10 +275,12 @@ export default function HomeScreen() {
     setErrorMsg('');
     try {
       let emo = 'neutral';
+      let emo2 = null;
       let confNum = 100;
       if (base64String) {
         const result = await detectEmotionFromImage(base64String);
         emo = result.emotion;
+        emo2 = result.secondary_emotion;
         confNum = result.confidence;
       } else if (voiceIntent) {
         emo = detectToneFromText(voiceIntent);
@@ -160,35 +291,66 @@ export default function HomeScreen() {
         await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
       }
 
-      const params = new URLSearchParams({
-        emotion: emo,
-        weather: weather?.condition.toLowerCase() || '',
-        intent: voiceIntent || '',
-        session: Math.random().toString(36).substring(7)
-      });
-      // Utilizing centralized API service nodeApi
-      const playlistResponse = await nodeApi.get(`/api/songs?${params.toString()}`);
-      const playlist = playlistResponse.data;
-
-      setDetectedEmotion(emo);
+      const displayEmo = emo2 ? `${emo} & ${emo2}` : emo;
+      setDetectedEmotion(displayEmo);
       setConfidence(confNum);
-      setIsTransitioning(true);
-      
-      setTimeout(async () => {
-        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-        playPlaylist(playlist, 0, emo, confNum);
-        setIsTransitioning(false);
-        setImageUri(null);
-        router.navigate('/player');
-      }, 3500);
+
+      // --- VIBE SHIFT INTERCEPTOR ---
+      // We only intercept if it's a single face (no couples therapy needed)
+      if (!emo2 && ['sad', 'angry', 'fear'].includes(emo)) {
+        setIsTransitioning(true);
+        setVibeShift({ active: true, emotion: emo, confidence: confNum });
+        setLoading(false);
+        return; // Halt here until user makes a choice
+      }
+
+      // Normal path for Happy, Calm, Surprise, Neutral, Disgust (or Couples Mode)
+      await fetchAndPlaySongs(emo, confNum, voiceIntent, emo2);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Error communicating with Vibo AI servers');
-    } finally {
+      setErrorMsg(err.response?.data?.error || err.message || 'Error communicating with AI servers');
       setLoading(false);
     }
   };
 
   if (isTransitioning) {
+    if (vibeShift?.active) {
+      return (
+        <LinearGradient colors={getGradientColors(vibeShift.emotion)} style={styles.transitionContainer}>
+          <Animated.Text style={[styles.transitionEmoji, { transform: [{ scale: pulseAnim }] }]}>
+            {getEmojiForEmotion(vibeShift.emotion)}
+          </Animated.Text>
+          <Text style={[styles.transitionTitle, { marginTop: 20 }]}>It looks like you're feeling {vibeShift.emotion}.</Text>
+          <Text style={[styles.confidenceText, { textAlign: 'center', paddingHorizontal: 30, lineHeight: 24, marginVertical: 15 }]}>
+            We're here for you. Do you want music to match your current vibe, or something to cheer you up?
+          </Text>
+          
+          <View style={{ marginTop: 30, width: '100%', paddingHorizontal: 25, gap: 16 }}>
+            <TouchableOpacity 
+              style={[styles.actionBtn, { backgroundColor: 'rgba(255,255,255,0.3)', borderWidth: 1, borderColor: 'rgba(0,0,0,0.1)' }]} 
+              onPress={() => {
+                setVibeShift({ ...vibeShift, active: false });
+                fetchAndPlaySongs(vibeShift.emotion, vibeShift.confidence);
+              }}>
+              <Text style={[styles.btnText, { color: '#000' }]}>Comfort Me (Match Vibe)</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.actionBtn} 
+              onPress={async () => {
+                await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                setVibeShift({ ...vibeShift, active: false });
+                setDetectedEmotion('happy'); 
+                fetchAndPlaySongs('happy', vibeShift.confidence);
+              }}>
+              <LinearGradient colors={['#FCD34D', '#F59E0B']} style={[styles.btnGradient, { shadowColor: '#F59E0B', shadowOpacity: 0.5, shadowRadius: 15 }]}>
+                <Text style={[styles.btnText, { color: '#FFF', fontWeight: 'bold', fontSize: 18 }]}>✨ Cheer Me Up! ✨</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        </LinearGradient>
+      );
+    }
+
     return (
       <LinearGradient colors={getGradientColors(detectedEmotion)} style={styles.transitionContainer}>
         <Text style={styles.transitionEmoji}>{getEmojiForEmotion(detectedEmotion)}</Text>
@@ -201,6 +363,7 @@ export default function HomeScreen() {
 
   return (
     <LinearGradient colors={getGradientColors(globalEmotion || 'neutral')} style={styles.background}>
+      <WeatherParticles weather={weather?.condition.toLowerCase()} emotion={globalEmotion || 'neutral'} />
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.mainContent}>
           <View style={styles.header}>
@@ -243,24 +406,12 @@ export default function HomeScreen() {
             <Text style={styles.voiceLabel}>{isListening ? "Listening..." : '"Hey Vibo"'}</Text>
           </TouchableOpacity>
 
-          <View style={styles.textInputBox}>
-            <TextInput 
-              placeholder="Or manually type your vibe here..." 
-              placeholderTextColor="#9CA3AF" 
-              style={styles.textInputStyle} 
-              onSubmitEditing={(e) => {
-                if (e.nativeEvent.text.trim()) {
-                  analyzeEmotion(null, e.nativeEvent.text);
-                }
-              }} 
-            />
-            <Ionicons name="send" size={20} color="#4F46E5" />
-          </View>
-
           {loading && (
             <View style={styles.loadingOverlay}>
-              <ActivityIndicator size="large" color="#4F46E5" />
-              <Text style={styles.loadingText}>Syncing vibes...</Text>
+              <Animated.View style={[styles.glowOrb, { transform: [{ scale: glowAnim }] }]}>
+                <LinearGradient colors={['#6366F1', '#A855F7', '#EC4899']} style={styles.glowOrbInner} />
+              </Animated.View>
+              <Text style={styles.loadingTextMaster}>Analyzing Vibe Matrix...</Text>
             </View>
           )}
 
@@ -295,8 +446,10 @@ const styles = StyleSheet.create({
   voiceLabel: { color: '#FFF', marginLeft: 16, fontSize: 20, fontWeight: '900' },
   textInputBox: { marginTop: 16, marginHorizontal: 32, flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF', borderRadius: 20, paddingHorizontal: 16, elevation: 2, width: width - 64 },
   textInputStyle: { flex: 1, height: 50, color: '#111827', fontSize: 16, fontWeight: '500' },
-  loadingOverlay: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(255,255,255,0.7)', justifyContent: 'center', alignItems: 'center', borderRadius: 32 },
-  loadingText: { marginTop: 12, color: '#4F46E5', fontWeight: 'bold' },
+  loadingOverlay: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, backgroundColor: 'rgba(17,24,39,0.85)', justifyContent: 'center', alignItems: 'center', borderRadius: 32, zIndex: 100 },
+  glowOrb: { width: 120, height: 120, borderRadius: 60, shadowColor: '#A855F7', shadowOffset: {width: 0, height: 0}, shadowRadius: 40, shadowOpacity: 1, elevation: 30 },
+  glowOrbInner: { width: '100%', height: '100%', borderRadius: 60 },
+  loadingTextMaster: { marginTop: 50, color: '#FFF', fontSize: 18, fontWeight: '800', letterSpacing: 1.5 },
   errorText: { color: '#EF4444', marginTop: 24, textAlign: 'center', fontWeight: '600' },
   transitionContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32 },
   transitionEmoji: { fontSize: 80, marginBottom: 24 },
